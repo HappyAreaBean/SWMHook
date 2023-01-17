@@ -1,0 +1,8 @@
+name: SWMHook
+main: cc.happyareabean.swmhook.SWMHook
+version: ${project.version}
+author: HappyAreaBean
+softdepend:
+  - Eden
+depend:
+  - SlimeWorldManager
