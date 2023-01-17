@@ -3,14 +3,12 @@ package cc.happyareabean.swmhook.hook.impl;
 import cc.happyareabean.swmhook.hook.ArenaProvider;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import rip.diamond.practice.arenas.Arena;
 import rip.diamond.practice.arenas.ArenaDetail;
-import rip.diamond.practice.arenas.task.ArenaRemoveTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,47 +33,28 @@ public class EdenArenaProvider extends ArenaProvider {
 				return;
 			}
 
-			// Create a new list to save generated arena
-			List<Arena> arenaList = new ArrayList<>();
-
 			for (int i = 0; i < world.getAmount(); i++) {
 				int currentNumber = i + 1;
 				String toBeGenerated = world.getWorldName() + currentNumber;
-				info(String.format("Adding arena: [%s] from template world [%s] to provider %s...", toBeGenerated, world.getTemplateName(), getProviderName()));
+				info(String.format("Adding arena details: [%s] from template world [%s] to provider %s...", toBeGenerated, world.getTemplateName(), getProviderName()));
 
-				Arena generatedArena = new Arena(toBeGenerated);
-				generatedArena.setAllowedKits(arena.getAllowedKits());
-				generatedArena.setIcon(arena.getIcon());
-				generatedArena.setYLimit(arena.getYLimit());
-				generatedArena.setBuildMax(arena.getBuildMax());
-				generatedArena.setEnabled(true);
-				ArenaDetail generatedArenaDetail = newArenaDetail(arena, generatedArena);
+				ArenaDetail generatedArenaDetail = newArenaDetail(arena, toBeGenerated);
 				generatedArenaDetail.copyChunk();
-				generatedArena.getArenaDetails().add(generatedArenaDetail);
+				arena.getArenaDetails().add(generatedArenaDetail);
+				arena.setEnabled(true);
 
-				arenaList.add(generatedArena);
-				success(String.format("Added arena [%s] to temp arena list.", toBeGenerated));
+				success(String.format("Added arena details [%s].", toBeGenerated));
 			}
-
-			info(String.format("Adding generated %s template arena to provider %s...", world.getTemplateName(), getProviderName()));
-
-			Arena.getArenas().addAll(arenaList);
-
-			success(String.format("Added %s generated %s template arena to provider %s!", arenaList.size(), world.getTemplateName(), getProviderName()));
 		});
 	}
 
 	@Override
 	public void removeArena(SWMHWorld world) {
-
-		for (int i = 0; i < world.getAmount(); i++) {
-			int currentNumber = i + 1;
-			String toBeRemove = world.getWorldName() + currentNumber;
-			info(String.format("Removing arena: [%s] from template world [%s] in provider %s...", toBeRemove, world.getTemplateName(), getProviderName()));
-			Arena arena = Arena.getArena(toBeRemove);
-			Arena.getArenas().remove(arena);
-			success(String.format("Removed arena: [%s] from provider %s!", toBeRemove, getProviderName()));
-		}
+		info(String.format("Restore arena details and state: [%s] in provider %s...", world.getTemplateName(), getProviderName()));
+		Arena arena = Arena.getArena(world.getTemplateName());
+		arena.setArenaDetails(Lists.newArrayList(arena.getArenaDetails().get(0)));
+		arena.setEnabled(false);
+		success(String.format("Restored arena details and state: [%s] from provider %s!", world.getTemplateName(), getProviderName()));
 	}
 
 	@Override
@@ -83,17 +62,17 @@ public class EdenArenaProvider extends ArenaProvider {
 		return "Eden";
 	}
 
-	private ArenaDetail newArenaDetail(Arena arena, Arena newArena) {
+	private ArenaDetail newArenaDetail(Arena arena, String worldName) {
 		Location a = arena.getA();
 		Location b = arena.getB();
 		Location min = arena.getMin();
 		Location max = arena.getMax();
 
-		a.setWorld(Bukkit.getWorld(newArena.getName()));
-		b.setWorld(Bukkit.getWorld(newArena.getName()));
-		min.setWorld(Bukkit.getWorld(newArena.getName()));
-		max.setWorld(Bukkit.getWorld(newArena.getName()));
+		a.setWorld(Bukkit.getWorld(worldName));
+		b.setWorld(Bukkit.getWorld(worldName));
+		min.setWorld(Bukkit.getWorld(worldName));
+		max.setWorld(Bukkit.getWorld(worldName));
 
-		return new ArenaDetail(newArena, a, b, min, max);
+		return new ArenaDetail(arena, a, b, min, max);
 	}
 }
