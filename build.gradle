@@ -5,25 +5,12 @@ plugins {
 }
 
 repositories {
-    maven {
-        url = uri('https://repo.fantasyrealms.net/other-snapshots')
-    }
-
-    maven {
-        url = uri('https://repo.fantasyrealms.net/releases')
-    }
-
-    maven {
-        url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/')
-    }
-
-    maven {
-        url = uri('https://repo.glaremasters.me/repository/concuncan/')
-    }
-
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
-    }
+    maven { url = uri('https://repo.fantasyrealms.net/other-snapshots') }
+    maven { url = uri('https://repo.fantasyrealms.net/releases') }
+    maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
+    maven { url = uri('https://repo.glaremasters.me/repository/concuncan/') }
+    maven { url = uri('https://repo.maven.apache.org/maven2/') }
+    maven { url = uri('https://jitpack.io') }
 
     mavenCentral()
     mavenLocal()
@@ -36,6 +23,9 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation 'de.exlll:configlib-core:2.2.1'
+
+    implementation 'com.github.Revxrsal.Lamp:common:3.1.2'
+    implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.2'
 
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT'
@@ -70,6 +60,12 @@ build {
     finalizedBy {
         tasks.shadowJar
     }
+}
+
+compileJava { // Preserve parameter names in the bytecode
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = "javac"
 }
 
 publishing {
