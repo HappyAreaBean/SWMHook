@@ -6,6 +6,7 @@ import de.exlll.configlib.annotation.ElementType;
 import de.exlll.configlib.configs.yaml.YamlConfiguration;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.World;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -25,5 +26,12 @@ public class SWMHWorldsList extends YamlConfiguration {
 	public SWMHWorldsList(Path path) {
 		super(path);
 		this.loadAndSave();
+	}
+
+	public SWMHWorld getFromWorld(World world) {
+		if (worlds.stream().noneMatch(w -> world.getName().contains(w.getWorldName()))) return null;
+
+		return worlds.stream().filter(w -> world.getName().contains(w.getWorldName()))
+				.findFirst().orElse(null);
 	}
 }

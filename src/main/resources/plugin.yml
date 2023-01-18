@@ -1,7 +1,9 @@
 name: SWMHook
 main: cc.happyareabean.swmhook.SWMHook
-version: ${project.version}
+version: ${pluginVersion}
 author: HappyAreaBean
+website: "https://fantasyrealms.net"
+description: "A plugin that can be used to use SWM generate world from template and act like a arena to several plugins"
 softdepend:
   - Eden
 depend:

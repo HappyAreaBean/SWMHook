@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'net.kyori.blossom' version "1.2.0"
 }
 
 repositories {
@@ -17,15 +18,32 @@ repositories {
 }
 
 group = 'cc.happyareabean'
-version = System.getProperty("version")
+version = project.getProperty("version") + "-${getGitHash()}"
 description = 'SWMHook'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+String getGitHash() {
+    def output = new ByteArrayOutputStream()
+    exec {
+        standardOutput = output
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+    }
+    return output.toString().trim()
+}
+
+String getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyy.MM.dd')
+    return formattedDate
+}
 
 dependencies {
     implementation 'de.exlll:configlib-core:2.2.1'
 
     implementation 'com.github.Revxrsal.Lamp:common:3.1.2'
     implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.2'
+    implementation 'net.kyori:adventure-api:4.12.0'
+    implementation 'net.kyori:adventure-platform-bukkit:4.2.0'
 
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT'
@@ -42,8 +60,18 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+blossom {
+    def constants = "src/main/java/cc/happyareabean/swmhook/constants/Constants.java"
+    replaceToken("\${pluginVersion}", version.toString(), constants)
+    replaceToken("\${commit}", getGitHash().toString(), constants)
+    replaceToken("\${buildDate}", getDate().toString(), constants)
+}
 
+tasks.processResources {
+    expand("pluginVersion": project.version, "commit": getGitHash(), "buildDate": getDate())
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 shadowJar {
     archiveClassifier.set('')
     archiveVersion.set('')
@@ -66,6 +94,7 @@ compileJava { // Preserve parameter names in the bytecode
     options.compilerArgs += ["-parameters"]
     options.fork = true
     options.forkOptions.executable = "javac"
+    options.encoding = 'UTF-8'
 }
 
 publishing {

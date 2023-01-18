@@ -1,5 +1,6 @@
 package cc.happyareabean.swmhook.objects;
 
+import cc.happyareabean.swmhook.SWMHook;
 import de.exlll.configlib.annotation.ConfigurationElement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +17,13 @@ public class SWMHWorld {
 
 	private static List<String> loadedWorlds = new ArrayList<>();
 
+	@Builder.Default
 	private SWMLoaderType loader = SWMLoaderType.FILE;
+	@Builder.Default
 	private String templateName = "default";
+	@Builder.Default
 	private String worldName = "default";
+	@Builder.Default
 	private int amount = 5;
 
 }

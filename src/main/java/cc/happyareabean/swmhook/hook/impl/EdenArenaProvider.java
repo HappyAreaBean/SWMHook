@@ -1,11 +1,13 @@
 package cc.happyareabean.swmhook.hook.impl;
 
+import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.hook.ArenaProvider;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import rip.diamond.practice.arenas.Arena;
 import rip.diamond.practice.arenas.ArenaDetail;
 
@@ -55,6 +57,18 @@ public class EdenArenaProvider extends ArenaProvider {
 		arena.setArenaDetails(Lists.newArrayList(arena.getArenaDetails().get(0)));
 		arena.setEnabled(false);
 		success(String.format("Restored arena details and state: [%s] from provider %s!", world.getTemplateName(), getProviderName()));
+	}
+
+	@Override
+	public boolean isArena(World world) {
+		SWMHWorld swmhWorld = SWMHook.getInstance().getWorldsList().getFromWorld(world);
+
+		if (swmhWorld == null) return false;
+		if (Arena.getArena(swmhWorld.getTemplateName()) == null) return false;
+
+		Arena arena = Arena.getArena(swmhWorld.getTemplateName());
+
+		return arena.getArenaDetails().stream().anyMatch(a -> a.getA().getWorld().getName().equalsIgnoreCase(world.getName()));
 	}
 
 	@Override

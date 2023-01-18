@@ -1,5 +1,7 @@
 package cc.happyareabean.swmhook;
 
+import cc.happyareabean.swmhook.commands.SWMHookCommand;
+import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
@@ -15,25 +17,30 @@ import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import revxrsal.commands.bukkit.BukkitCommandHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Getter
 public class SWMHook extends JavaPlugin {
 
-	@Getter private SWMHWorldsList worlds;
+	@Getter private SWMHWorldsList worldsList;
 	@Getter private ArenaProviderManager arenaProviderManager;
+	@Getter private static SWMHook instance;
 
 	@Override
 	public void onEnable() {
+		instance = this;
 
-		worlds = new SWMHWorldsList(new File(this.getDataFolder(), "worlds.yml").toPath());
+		worldsList = new SWMHWorldsList(new File(this.getDataFolder(), "worlds.yml").toPath());
 
-		if (worlds.getWorlds().size() == 1) {
-			if (worlds.getWorlds().get(0).getTemplateName().equalsIgnoreCase("default")) {
+		if (worldsList.getWorlds().size() == 1) {
+			if (worldsList.getWorlds().get(0).getTemplateName().equalsIgnoreCase("default")) {
 				log("This look like is your first time running SWMHook");
 				log("SWMHook will not load anything until you configure your worlds.yml properly!");
 				Bukkit.getPluginManager().disablePlugin(this);
@@ -48,9 +55,16 @@ public class SWMHook extends JavaPlugin {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				worlds.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
+				worldsList.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
 			}
 		}.runTaskLater(this, 1);
+
+		info("Loading commands...");
+		BukkitCommandHandler commandHandler = BukkitCommandHandler.create(this);
+		commandHandler.getAutoCompleter().registerParameterSuggestions(World.class, (args, sender, command) -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()));
+		commandHandler.setHelpWriter((command, actor) -> String.format(" &8• &e/%s %s &7- &f%s", command.getPath().toRealString(), command.getUsage(), command.getDescription()));
+		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand());
+		commandHandler.enableAdventure();
 
 		info("SWMHook by HappyAreaBean has been enabled!");
 	}
@@ -64,7 +78,7 @@ public class SWMHook extends JavaPlugin {
 	public void loadAllSWMHWorld() {
 		SlimePlugin slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
 
-		worlds.getWorlds().forEach(world -> {
+		worldsList.getWorlds().forEach(world -> {
 
 			SlimeLoader loader = slimePlugin.getLoader(world.getLoader().name().toLowerCase());
 			if (loader == null) {
@@ -91,7 +105,7 @@ public class SWMHook extends JavaPlugin {
 	}
 
 	public void unLoadAllSWMHWorld() {
-		worlds.getWorlds().forEach(world -> {
+		worldsList.getWorlds().forEach(world -> {
 
 			if (world.getAmount() == 0) return;
 

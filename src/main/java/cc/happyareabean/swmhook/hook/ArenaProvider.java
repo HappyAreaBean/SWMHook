@@ -2,6 +2,7 @@ package cc.happyareabean.swmhook.hook;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
+import org.bukkit.World;
 
 public abstract class ArenaProvider {
 
@@ -19,6 +20,15 @@ public abstract class ArenaProvider {
 	 */
 	public void removeArena(SWMHWorld world) {
 
+	}
+
+	/**
+	 * check is the world is an arena in the provider
+	 * @param world A {@link World} object
+	 * @return <b>true</b> if world is an arena, else <b>false</b>
+	 */
+	public boolean isArena(World world) {
+		return false;
 	}
 
 	public String getProviderName()	{
