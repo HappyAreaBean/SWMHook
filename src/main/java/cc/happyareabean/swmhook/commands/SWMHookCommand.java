@@ -1,6 +1,12 @@
 package cc.happyareabean.swmhook.commands;
 
+import cc.happyareabean.swmhook.SWMHook;
+import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
+import cc.happyareabean.swmhook.hook.ArenaProvider;
+import cc.happyareabean.swmhook.objects.SWMHWorld;
+import cc.happyareabean.swmhook.objects.SWMLoaderType;
+import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -16,6 +22,7 @@ import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Description;
+import revxrsal.commands.annotation.Named;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.BukkitCommandActor;
@@ -71,6 +78,68 @@ public class SWMHookCommand {
 		target.teleport(spawnLocation);
 	}
 
+	@Subcommand("add")
+	@Description("Add a world to SWMHook")
+	public void add(BukkitCommandActor actor, World world, @Named("worldName/-") String worldName, int amount, SWMLoaderType loaderType) {
+		SlimeWorld slimeWorld = SWMPlugin.getInstance().getNms().getSlimeWorld(world);
+
+		if (slimeWorld == null) {
+			actor.error("The target world need to be a slime world!");
+			return;
+		}
+
+		if (worldName.equals("-"))
+			worldName = slimeWorld.getName();
+
+		SWMHWorld swmhWorld = new SWMHWorld(loaderType, slimeWorld.getName(), worldName, amount);
+
+		SWMHook.getInstance().getWorldsList().getWorlds().add(swmhWorld);
+		SWMHook.getInstance().getWorldsList().save();
+		actor.reply(String.format("&aAdded world &f%s &ato SWMHook!", swmhWorld.toFancyString()));
+	}
+
+	@Subcommand("remove")
+	@Description("Remove a world in SWMHook")
+	public void remove(BukkitCommandActor actor, SWMHWorld swmhWorld) {
+		if (SWMHook.getInstance().getWorldsList().getWorlds().remove(swmhWorld)) {
+			SWMHook.getInstance().getWorldsList().save();
+			actor.reply(String.format("&aRemoved world &f%s &cin SWMHook!", swmhWorld.toFancyString()));
+			return;
+		}
+
+		actor.reply(String.format("&cUnable to remove &f%s &cin SWMHook, check console for more information", swmhWorld.toFancyString()));
+	}
+
+	@Subcommand("amount")
+	@Description("Change world amount in SWMHook")
+	public void amount(BukkitCommandActor actor, SWMHWorld swmhWorld, int amount) {
+		SWMHWorldsList worldsList = SWMHook.getInstance().getWorldsList();
+		int index = worldsList.getWorlds().indexOf(swmhWorld);
+		int oldAmount = swmhWorld.getAmount();
+
+		swmhWorld.setAmount(amount);
+		worldsList.getWorlds().set(index, swmhWorld);
+		worldsList.save();
+		actor.reply(String.format("&aUpdated world &f%s &aamount from &f%s &ato &f%s&a!", swmhWorld.getTemplateName(), oldAmount, amount));
+	}
+
+	@Subcommand("reloadWorlds")
+	@Description("Reload SWMHook worlds")
+	public void reload(BukkitCommandActor actor) {
+		SWMHook plugin = SWMHook.getInstance();
+		long start = System.currentTimeMillis();
+		actor.reply("&eUnloading all SWMH worlds...");
+		plugin.unLoadAllSWMHWorld();
+		actor.reply("&eLoad change from worlds.yml...");
+		plugin.getWorldsList().loadAndSave();
+		actor.reply("&eLoading all SWMH worlds...");
+		plugin.loadAllSWMHWorld();
+		actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
+		plugin.addToArena();
+		long end = System.currentTimeMillis();
+		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
+	}
+
 	@Subcommand({"worldlist", "wl"})
 	@Description("List current world")
 	public void worldList(BukkitCommandActor actor, @Optional(def = "false") boolean slimeOnly, @Optional String filter) {
@@ -95,7 +164,7 @@ public class SWMHookCommand {
 			return true;
 		}).filter(w -> filter == null || w.getName().contains(filter)).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
 			TextComponent.Builder c = text();
-			c.append(text(" - ", NamedTextColor.GRAY));
+			c.append(text("   - ", NamedTextColor.GRAY));
 			c.append(text(w.getName(), NamedTextColor.GREEN)
 					.hoverEvent(text("Click here to teleport to world ", NamedTextColor.RED, TextDecoration.BOLD).append(text(w.getName(), NamedTextColor.GOLD)))
 					.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook tp " + w.getName())));
@@ -104,6 +173,11 @@ public class SWMHookCommand {
 				c.append(SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null ? text(" [SLIME]", NamedTextColor.DARK_GREEN) : empty());
 			} else {
 				c.append(text(" [SLIME]", NamedTextColor.DARK_GREEN));
+			}
+
+			ArenaProvider arenaProvider = SWMHook.getInstance().getArenaProviderManager().getProvider();
+			if (arenaProvider.isArena(w)) {
+				c.append(text(String.format(" [%s]", arenaProvider.getProviderName().toUpperCase()), NamedTextColor.DARK_RED));
 			}
 
 			worldList.add(c.build());
