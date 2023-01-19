@@ -55,7 +55,7 @@ public class SWMHook extends JavaPlugin {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				worldsList.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
+				addToArena();
 			}
 		}.runTaskLater(this, 1);
 
@@ -73,6 +73,10 @@ public class SWMHook extends JavaPlugin {
 	public void onDisable() {
 		unLoadAllSWMHWorld();
 		log("Thank you and good bye!");
+	}
+
+	public void addToArena() {
+		worldsList.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
 	}
 
 	public void loadAllSWMHWorld() {
@@ -109,7 +113,8 @@ public class SWMHook extends JavaPlugin {
 
 			if (world.getAmount() == 0) return;
 
-			arenaProviderManager.getProvider().removeArena(world);
+			if (arenaProviderManager.getProvider().isArena(Bukkit.getWorld(world.getTemplateName())))
+				arenaProviderManager.getProvider().removeArena(world);
 
 			for (int i = 0; i < world.getAmount(); i++) {
 				int currentNumber = i + 1;
