@@ -39,6 +39,10 @@ public abstract class ArenaProvider {
 		SWMHook.log(String.format("[%s] %s", getProviderName(), message));
 	}
 
+	public void log(String arena, String message) {
+		SWMHook.log(String.format("[%s] [%s] %s", getProviderName(), arena, message));
+	}
+
 	public void info(String message) {
 		SWMHook.info(String.format("[%s] %s", getProviderName(), message));
 	}
