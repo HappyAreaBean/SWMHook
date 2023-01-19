@@ -97,6 +97,7 @@ public class SWMHookCommand {
 		SWMHook.getInstance().getWorldsList().getWorlds().add(swmhWorld);
 		SWMHook.getInstance().getWorldsList().save();
 		actor.reply(String.format("&aAdded world &f%s &ato SWMHook!", swmhWorld.toFancyString()));
+		actor.reply(Constants.RELOAD_WORLD);
 	}
 
 	@Subcommand("remove")
@@ -105,6 +106,7 @@ public class SWMHookCommand {
 		if (SWMHook.getInstance().getWorldsList().getWorlds().remove(swmhWorld)) {
 			SWMHook.getInstance().getWorldsList().save();
 			actor.reply(String.format("&aRemoved world &f%s &cin SWMHook!", swmhWorld.toFancyString()));
+			actor.reply(Constants.RELOAD_WORLD);
 			return;
 		}
 
@@ -122,6 +124,7 @@ public class SWMHookCommand {
 		worldsList.getWorlds().set(index, swmhWorld);
 		worldsList.save();
 		actor.reply(String.format("&aUpdated world &f%s &aamount from &f%s &ato &f%s&a!", swmhWorld.getTemplateName(), oldAmount, amount));
+		actor.reply(Constants.RELOAD_WORLD);
 	}
 
 	@Subcommand("reloadWorlds")
