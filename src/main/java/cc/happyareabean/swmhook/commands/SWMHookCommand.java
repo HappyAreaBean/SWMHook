@@ -138,10 +138,12 @@ public class SWMHookCommand {
 		plugin.getWorldsList().loadAndSave();
 		actor.reply("&eLoading all SWMH worlds...");
 		plugin.loadAllSWMHWorld();
-		actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
-		plugin.addToArena();
-		long end = System.currentTimeMillis();
-		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
+		Bukkit.getScheduler().runTaskLater(SWMHook.getInstance(), () -> {
+			actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
+			plugin.addToArena();
+			long end = System.currentTimeMillis();
+			actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
+		}, 20 * 3);
 	}
 
 	@Subcommand({"worldlist", "wl"})
