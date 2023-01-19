@@ -52,8 +52,11 @@ public class EdenArenaProvider extends ArenaProvider {
 
 	@Override
 	public void removeArena(SWMHWorld world) {
-		info(String.format("Restore arena details and state: [%s] in provider %s...", world.getTemplateName(), getProviderName()));
 		Arena arena = Arena.getArena(world.getTemplateName());
+
+		if (arena == null) return;
+
+		info(String.format("Restore arena details and state: [%s] in provider %s...", world.getTemplateName(), getProviderName()));
 		arena.setArenaDetails(Lists.newArrayList(arena.getArenaDetails().get(0)));
 		arena.setEnabled(false);
 		success(String.format("Restored arena details and state: [%s] from provider %s!", world.getTemplateName(), getProviderName()));
@@ -77,10 +80,10 @@ public class EdenArenaProvider extends ArenaProvider {
 	}
 
 	private ArenaDetail newArenaDetail(Arena arena, String worldName) {
-		Location a = arena.getA();
-		Location b = arena.getB();
-		Location min = arena.getMin();
-		Location max = arena.getMax();
+		Location a = arena.getA().clone();
+		Location b = arena.getB().clone();
+		Location min = arena.getMin().clone();
+		Location max = arena.getMax().clone();
 
 		a.setWorld(Bukkit.getWorld(worldName));
 		b.setWorld(Bukkit.getWorld(worldName));
