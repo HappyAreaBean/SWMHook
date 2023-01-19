@@ -35,11 +35,11 @@ public class WorldInfoCommand {
 
 		List<String> list = new ArrayList<>();
 		list.add("&8&m----------------------------------------");
-		list.add(String.format("World name: &b%s", world.getName()));
+		list.add(String.format("World name: &b&l%s", world.getName()));
 		list.add(String.format("Is it in slime format: &a%s", Color.toColorBoolean(SWMPlugin.getInstance().getNms().getSlimeWorld(world) != null)));
 		list.add(String.format("Is it in SWMHook World Template: &a%s", Color.toColorBoolean(swmhWorld != null)));
-		list.add(String.format("In Arena Provider: &a%s", swmhWorld == null ? Color.toColorBoolean(false) :
-				String.format("&a%s &7- &e%s",SWMHook.getInstance().getArenaProviderManager().getProviderName(), swmhWorld.getTemplateName())));
+		list.add(String.format("In Arena Provider: &a&l%s", swmhWorld == null ? Color.toColorBoolean(false) :
+				String.format("&6&l%s &7- &e&l%s", SWMHook.getInstance().getArenaProviderManager().getProviderName(), swmhWorld.getTemplateName())));
 		list.add("&8&m----------------------------------------");
 
 		list.forEach(actor::reply);
