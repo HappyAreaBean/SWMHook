@@ -6,6 +6,7 @@ import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.hook.ArenaProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMLoaderType;
+import cc.happyareabean.swmhook.objects.SWMWorldSearchType;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import net.kyori.adventure.text.Component;
@@ -142,26 +143,32 @@ public class SWMHookCommand {
 
 	@Subcommand({"worldlist", "wl"})
 	@Description("List current world")
-	public void worldList(BukkitCommandActor actor, @Optional(def = "false") boolean slimeOnly, @Optional String filter) {
+	public void worldList(BukkitCommandActor actor, @Optional(def = "ALL") SWMWorldSearchType type, @Optional String filter) {
 
 		int totalWorlds = 0;
 
 		List<Component> list = new ArrayList<>();
 		if (filter != null) {
-			list.add(text("Searching for: ", NamedTextColor.RED).append(text(filter, NamedTextColor.YELLOW)).append(text("...")));
+			list.add(text("Searching for: ", NamedTextColor.WHITE, TextDecoration.BOLD).append(text(filter, NamedTextColor.AQUA)).append(text("...")));
 			if (Bukkit.getWorlds().stream().noneMatch(w -> w.getName().contains(filter))) {
 				list.add(space());
 				list.add(text("No worlds match your search criteria.", NamedTextColor.RED));
 			}
 		}
-		list.add(space());
 
 		List<Component> worldList = new ArrayList<>();
 		Bukkit.getWorlds().stream().filter(w -> {
-			if (slimeOnly) {
-				return SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null;
+			switch (type) {
+				case NORMAL:
+					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) == null;
+				case SLIME_ONLY:
+					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null;
+				case PROVIDER:
+					return SWMHook.getInstance().getArenaProviderManager().getProvider().isArena(w);
+				case ALL:
+				default:
+					return true;
 			}
-			return true;
 		}).filter(w -> filter == null || w.getName().contains(filter)).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
 			TextComponent.Builder c = text();
 			c.append(text("   - ", NamedTextColor.GRAY));
@@ -169,26 +176,33 @@ public class SWMHookCommand {
 					.hoverEvent(text("Click here to teleport to world ", NamedTextColor.RED, TextDecoration.BOLD).append(text(w.getName(), NamedTextColor.GOLD)))
 					.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook tp " + w.getName())));
 
-			if (!slimeOnly) {
+			if (type != SWMWorldSearchType.SLIME_ONLY) {
 				c.append(SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null ? text(" [SLIME]", NamedTextColor.DARK_GREEN) : empty());
 			} else {
 				c.append(text(" [SLIME]", NamedTextColor.DARK_GREEN));
 			}
 
 			ArenaProvider arenaProvider = SWMHook.getInstance().getArenaProviderManager().getProvider();
-			if (arenaProvider.isArena(w)) {
+			if (type != SWMWorldSearchType.PROVIDER) {
+				if (arenaProvider.isArena(w)) {
+					c.append(text(String.format(" [%s]", arenaProvider.getProviderName().toUpperCase()), NamedTextColor.DARK_RED));
+				}
+			} else {
 				c.append(text(String.format(" [%s]", arenaProvider.getProviderName().toUpperCase()), NamedTextColor.DARK_RED));
 			}
+
 
 			worldList.add(c.build());
 		});
 
 		totalWorlds = worldList.size();
+		if (totalWorlds > 0) list.add(space());
 		list.addAll(worldList);
 
 		List<Component> finalList = new ArrayList<>();
 		finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
-		finalList.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook World Search &7- &fTotal of &9%s &fworlds", totalWorlds)));
+		finalList.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook World %s &7- &fTotal of &9%s &fworld%s &7- &6[%s]",
+				filter != null ? "Search" : "List", totalWorlds, totalWorlds > 1 ? "s" : "", type)));
 		finalList.addAll(list);
 		finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
 		finalList.forEach(actor::reply);
