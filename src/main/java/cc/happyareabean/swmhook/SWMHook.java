@@ -5,6 +5,7 @@ import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
+import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.utils.Color;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
@@ -21,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
+import revxrsal.commands.exception.CommandErrorException;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +64,14 @@ public class SWMHook extends JavaPlugin {
 		info("Loading commands...");
 		BukkitCommandHandler commandHandler = BukkitCommandHandler.create(this);
 		commandHandler.getAutoCompleter().registerParameterSuggestions(World.class, (args, sender, command) -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()));
+		commandHandler.getAutoCompleter().registerParameterSuggestions(SWMHWorld.class, (args, sender, command) -> worldsList.getWorlds().stream().map(SWMHWorld::getTemplateName).collect(Collectors.toList()));
+		commandHandler.registerValueResolver(SWMHWorld.class, context -> {
+			String value = context.pop();
+			if (worldsList.getWorlds().stream().noneMatch(w -> w.getTemplateName().equalsIgnoreCase(value))) {
+				throw new CommandErrorException("Invalid SWMHWorld: &e" + value);
+			}
+			return worldsList.getWorlds().stream().filter(w -> w.getTemplateName().equalsIgnoreCase(value)).findFirst().orElse(null);
+		});
 		commandHandler.setHelpWriter((command, actor) -> String.format(" &8• &e/%s %s &7- &f%s", command.getPath().toRealString(), command.getUsage(), command.getDescription()));
 		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand());
 		commandHandler.enableAdventure();
