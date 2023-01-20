@@ -113,6 +113,14 @@ public class SWMHookCommand {
 		actor.reply(String.format("&cUnable to remove &f%s &cin SWMHook, check console for more information", swmhWorld.toFancyString()));
 	}
 
+	@Subcommand("disable")
+	@Description("Disable SWMHook. Let you edit arenas from provider without saving any SWMH data")
+	public void disable(BukkitCommandActor actor) {
+		actor.reply("&eUnloading all SWMH worlds and remove arenas from provider...");
+		SWMHook.getInstance().unLoadAllSWMHWorld();
+		actor.reply("&aYou can always re-active SWMH by using &f/swmhook reloadWorlds&a!");
+	}
+
 	@Subcommand("amount")
 	@Description("Change world amount in SWMHook")
 	public void amount(BukkitCommandActor actor, SWMHWorld swmhWorld, int amount) {
