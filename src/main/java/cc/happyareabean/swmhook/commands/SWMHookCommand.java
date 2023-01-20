@@ -39,6 +39,7 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 
+@SuppressWarnings("unused")
 @Command({"swmhook", "swmh"})
 @CommandPermission("swmhook.admin")
 public class SWMHookCommand {
