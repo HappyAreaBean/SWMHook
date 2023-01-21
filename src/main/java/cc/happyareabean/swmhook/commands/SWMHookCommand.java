@@ -33,7 +33,10 @@ import revxrsal.commands.help.CommandHelp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static cc.happyareabean.swmhook.constants.Constants.HELP_COMMAND_FORMAT;
+import static cc.happyareabean.swmhook.constants.Constants.PAGE_TEXT;
 import static cc.happyareabean.swmhook.utils.Utils.LEGACY_SERIALIZER;
 import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.space;
@@ -45,6 +48,7 @@ import static net.kyori.adventure.text.Component.text;
 public class SWMHookCommand {
 
 	@DefaultFor({"swmhook", "swmh"})
+	@Subcommand("help")
 	@Description("SWMHook commands list")
 	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional(def = "1") int page) {
 		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
@@ -122,7 +126,14 @@ public class SWMHookCommand {
 		actor.reply("&aYou can always re-active SWMH by using &f/swmhook reloadWorlds&a!");
 	}
 
-	@Subcommand("amount")
+	@DefaultFor({"swmhook edit", "swmh edit"})
+	@Subcommand("edit help")
+	@Description("SWMHook edit commands list")
+	public void helpEdit(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional(def = "1") int page) {
+		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
+	}
+
+	@Subcommand("edit amount")
 	@Description("Change world amount in SWMHook")
 	public void amount(BukkitCommandActor actor, SWMHWorld swmhWorld, int amount) {
 		SWMHWorldsList worldsList = SWMHook.getInstance().getWorldsList();
@@ -136,7 +147,7 @@ public class SWMHookCommand {
 		actor.reply(Constants.RELOAD_WORLD);
 	}
 
-	@Subcommand("loader")
+	@Subcommand("edit loader")
 	@Description("Change SWMHook world loader type")
 	public void loader(BukkitCommandActor actor, SWMHWorld swmhWorld, SWMLoaderType loader) {
 		SWMHWorldsList worldsList = SWMHook.getInstance().getWorldsList();
@@ -249,19 +260,46 @@ public class SWMHookCommand {
 		finalList.forEach(actor::reply);
 	}
 
-	public static List<String> buildCommandHelp(CommandHelp<String> helpEntries, int page, String subCommand) {
-		if (subCommand != null) helpEntries.removeIf(s -> !s.contains(subCommand));
-		int slotPerPage = 10;
+	public static List<Component> buildCommandHelp(CommandHelp<String> helpEntries, int page, String subCommand) {
+		if (subCommand != null) helpEntries.removeIf(s -> !s.split("-")[0].contains(subCommand));
+		int slotPerPage = 5;
 		int maxPages = helpEntries.getPageSize(slotPerPage);
-		List<String> list = new ArrayList<>();
-		list.add("&8&m----------------------------------------");
-		list.add(String.format("&c&lSWMHook &f(v%s) &7- &fPage &9(%s/%s)", Constants.VERSION, page, maxPages));
-		list.add("&fMade With &4❤ &fBy HappyAreaBean");
-		list.add("");
-		list.addAll(helpEntries.paginate(page, slotPerPage));
-		list.add("");
-		list.add("&8&m----------------------------------------");
+		List<Component> list = new ArrayList<>();
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
+		list.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook &f(v%s) &7- &fPage &9(%s/%s)", Constants.VERSION, page, maxPages)));
+		list.add(LEGACY_SERIALIZER.deserialize("&fMade With &4❤ &fBy HappyAreaBean"));
+		list.add(space());
+		list.addAll(helpEntries.paginate(page, slotPerPage).stream().map(LEGACY_SERIALIZER::deserialize).collect(Collectors.toList()));
+		list.add(space());
+		if (maxPages > 1)
+			list.add(paginateNavigation(page, maxPages, subCommand != null ? "/swmhook " + subCommand + "%s" : HELP_COMMAND_FORMAT));
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
 		return list;
 	}
+
+	public static Component paginateNavigation(int currentPage, int maxPage, String commandFormat) {
+		int previousPage = currentPage - 1;
+		int nextPage = currentPage + 1;
+
+		boolean havePreviousPage = previousPage != 0;
+		boolean haveNextPage = maxPage != currentPage;
+
+		TextComponent.Builder pageText = text()
+				.decorate(TextDecoration.BOLD)
+				.color(NamedTextColor.YELLOW);
+
+		pageText.append(text("«", !havePreviousPage ? NamedTextColor.DARK_GRAY : null)
+				.clickEvent(havePreviousPage ? ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, String.format(commandFormat, previousPage)) : null)
+				.hoverEvent(havePreviousPage ? text(String.format(PAGE_TEXT, previousPage)).color(NamedTextColor.GOLD) : null));
+
+		pageText.append(text(" ▍ "));
+
+		pageText.append(text("»", !haveNextPage ? NamedTextColor.DARK_GRAY : null)
+				.clickEvent(haveNextPage ? ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, String.format(commandFormat, nextPage)) : null)
+				.hoverEvent(haveNextPage ? text(String.format(PAGE_TEXT, nextPage)).color(NamedTextColor.GOLD) : null));
+
+		return pageText.build();
+	}
+
 
 }

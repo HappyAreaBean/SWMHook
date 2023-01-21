@@ -14,4 +14,7 @@ public class Constants {
 					NamedTextColor.WHITE, TextDecoration.BOLD)
 			.hoverEvent(Component.text("Click here to reload worlds"))
 			.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook reloadworlds"));
+
+	public static final String HELP_COMMAND_FORMAT = "/swmhook %s";
+	public static final String PAGE_TEXT = "Page %s";
 }
