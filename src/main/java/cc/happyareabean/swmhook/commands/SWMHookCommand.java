@@ -138,7 +138,7 @@ public class SWMHookCommand {
 
 	@Subcommand("reloadWorlds")
 	@Description("Reload SWMHook worlds")
-	public void reload(BukkitCommandActor actor) {
+	public void reloadWorlds(BukkitCommandActor actor) {
 		SWMHook plugin = SWMHook.getInstance();
 		long start = System.currentTimeMillis();
 		actor.reply("&eUnloading all SWMH worlds...");
@@ -147,12 +147,25 @@ public class SWMHookCommand {
 		plugin.getWorldsList().loadAndSave();
 		actor.reply("&eLoading all SWMH worlds...");
 		plugin.loadAllSWMHWorld();
-		Bukkit.getScheduler().runTaskLater(SWMHook.getInstance(), () -> {
-			actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
-			plugin.addToArena();
-			long end = System.currentTimeMillis();
-			actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
-		}, 20 * 3);
+		long end = System.currentTimeMillis();
+		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
+		actor.reply(text("TIP: ", NamedTextColor.GOLD, TextDecoration.BOLD)
+				.append(text("You will need to reload provider using /swmhook loadprovider, or ", NamedTextColor.YELLOW))
+				.append(text("click here", NamedTextColor.GREEN, TextDecoration.BOLD)
+						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook loadprovider"))));
+		actor.reply(text("Please also make sure all the world are *loaded* before loading provider.", NamedTextColor.GRAY, TextDecoration.ITALIC));
+		actor.reply(text("Recommend waiting 10 - 20 seconds after reloaded worlds.", NamedTextColor.GRAY, TextDecoration.ITALIC));
+	}
+
+	@Subcommand("loadProvider")
+	@Description("Load SWMHook Arena Provider")
+	public void reloadProvider(BukkitCommandActor actor) {
+		SWMHook plugin = SWMHook.getInstance();
+		long start = System.currentTimeMillis();
+		actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
+		plugin.addToArena();
+		long end = System.currentTimeMillis();
+		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
 	}
 
 	@Subcommand({"worldlist", "wl"})
