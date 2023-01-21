@@ -136,6 +136,20 @@ public class SWMHookCommand {
 		actor.reply(Constants.RELOAD_WORLD);
 	}
 
+	@Subcommand("loader")
+	@Description("Change SWMHook world loader type")
+	public void loader(BukkitCommandActor actor, SWMHWorld swmhWorld, SWMLoaderType loader) {
+		SWMHWorldsList worldsList = SWMHook.getInstance().getWorldsList();
+		int index = worldsList.getWorlds().indexOf(swmhWorld);
+		SWMLoaderType oldLoader = swmhWorld.getLoader();
+
+		swmhWorld.setLoader(loader);
+		worldsList.getWorlds().set(index, swmhWorld);
+		worldsList.save();
+		actor.reply(String.format("&aUpdated world &f%s &aloader from &f%s &ato &f%s&a!", swmhWorld.getTemplateName(), oldLoader, loader));
+		actor.reply(Constants.RELOAD_WORLD);
+	}
+
 	@Subcommand("reloadWorlds")
 	@Description("Reload SWMHook worlds")
 	public void reloadWorlds(BukkitCommandActor actor) {
