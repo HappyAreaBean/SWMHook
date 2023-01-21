@@ -39,8 +39,10 @@ import static cc.happyareabean.swmhook.constants.Constants.HELP_COMMAND_FORMAT;
 import static cc.happyareabean.swmhook.constants.Constants.PAGE_TEXT;
 import static cc.happyareabean.swmhook.utils.Utils.LEGACY_SERIALIZER;
 import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
 
 @SuppressWarnings("unused")
 @Command({"swmhook", "swmh"})
@@ -107,11 +109,14 @@ public class SWMHookCommand {
 
 	@Subcommand("remove")
 	@Description("Remove a world in SWMHook")
-	public void remove(BukkitCommandActor actor, SWMHWorld swmhWorld) {
+	public void remove(BukkitCommandActor actor, SWMHWorld swmhWorld, @Optional(def = "false") boolean showList) {
 		if (SWMHook.getInstance().getWorldsList().getWorlds().remove(swmhWorld)) {
 			SWMHook.getInstance().getWorldsList().save();
-			actor.reply(String.format("&aRemoved world &f%s &cin SWMHook!", swmhWorld.toFancyString()));
+			actor.reply(String.format("&cRemoved world &f%s &cin SWMHook!", swmhWorld.toFancyString()));
 			actor.reply(Constants.RELOAD_WORLD);
+
+			if (showList)
+				list(actor);
 			return;
 		}
 
@@ -191,6 +196,56 @@ public class SWMHookCommand {
 		plugin.addToArena();
 		long end = System.currentTimeMillis();
 		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
+	}
+
+	@Subcommand({"list"})
+	@Description("List all the SWMHWorld in SWMHook")
+	public void list(BukkitCommandActor actor) {
+		List<SWMHWorld> worldList = SWMHook.getInstance().getWorldsList().getWorlds();
+		int worldSize = worldList.size();
+		List<Component> list = new ArrayList<>();
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
+		list.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHWorld List &7- &fTotal of &9%s &fworld%s",
+				worldSize, worldSize > 1 ? "s" : "")));
+		if (worldSize > 0) {
+			list.add(LEGACY_SERIALIZER.deserialize("&eHover for more info!"));
+			list.add(space());
+			for (SWMHWorld world : worldList) {
+				list.add(textOfChildren(
+						text("[X]", NamedTextColor.RED, TextDecoration.BOLD)
+								.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/swmhook remove %s true", world.getTemplateName())))
+								.hoverEvent(text(String.format("Click here to delete %s", world.getTemplateName()),
+										NamedTextColor.RED, TextDecoration.BOLD)),
+						text("   - ", NamedTextColor.GRAY),
+						text(String.format("%s", world.getTemplateName()), NamedTextColor.GREEN)
+								.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/swmhook tp %s", world.getTemplateName())))
+								.hoverEvent(textOfChildren(
+										text("Loader: ", NamedTextColor.GRAY),
+										text(world.getLoader().name(), NamedTextColor.WHITE),
+										newline(),
+										text("World Name: ", NamedTextColor.GRAY),
+										text(world.getWorldName(), NamedTextColor.WHITE),
+										newline(),
+										text("Amount: ", NamedTextColor.GRAY),
+										text(world.getAmount(), NamedTextColor.WHITE),
+										newline(),
+										newline(),
+										text("Click to teleport to world ", NamedTextColor.RED, TextDecoration.BOLD)
+												.append(text(world.getTemplateName(), NamedTextColor.GOLD, TextDecoration.BOLD))
+								))
+				));
+			}
+		} else {
+			list.add(textOfChildren(
+					text("SWHWorld list are empty.", NamedTextColor.YELLOW),
+					space(),
+					text("Click here to add some?", NamedTextColor.GOLD)
+							.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/swmhook add "))
+							.hoverEvent(text("Click here! :)", NamedTextColor.AQUA, TextDecoration.BOLD))
+			).decorate(TextDecoration.BOLD));
+		}
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
+		list.forEach(actor::reply);
 	}
 
 	@Subcommand({"worldlist", "wl"})
