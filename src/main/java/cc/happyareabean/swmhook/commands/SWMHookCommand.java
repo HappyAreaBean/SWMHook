@@ -26,6 +26,7 @@ import revxrsal.commands.annotation.Description;
 import revxrsal.commands.annotation.Named;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.bukkit.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.help.CommandHelp;
@@ -250,7 +251,10 @@ public class SWMHookCommand {
 
 	@Subcommand({"worldlist", "wl"})
 	@Description("List current world")
-	public void worldList(BukkitCommandActor actor, @Optional(def = "ALL") SWMWorldSearchType type, @Optional String filter) {
+	public void worldList(BukkitCommandActor actor,
+						  @Optional(def = "ALL") SWMWorldSearchType type,
+						  @Switch(value = "hideDup") boolean hideDuplicate,
+						  @Optional String filter) {
 
 		int totalWorlds = 0;
 
@@ -276,7 +280,19 @@ public class SWMHookCommand {
 				default:
 					return true;
 			}
-		}).filter(w -> filter == null || w.getName().contains(filter)).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
+		}).filter(w -> filter == null || w.getName().contains(filter))
+				.filter(w -> {
+					if (!hideDuplicate) return true;
+					SWMHWorld swmhWorld = SWMHook.getInstance().getWorldsList().getFromWorld(w);
+					if (swmhWorld != null) {
+						if (w.getName().equals(swmhWorld.getTemplateName()))
+							return true;
+
+						if (w.getName().contains(swmhWorld.getWorldName()))
+							return false;
+					}
+					return true;
+				}).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
 			TextComponent.Builder c = text();
 			c.append(text("   - ", NamedTextColor.GRAY));
 			c.append(text(w.getName(), NamedTextColor.GREEN)
