@@ -29,9 +29,9 @@ public class SWMHWorldsList extends YamlConfiguration {
 	}
 
 	public SWMHWorld getFromWorld(World world) {
-		if (worlds.stream().noneMatch(w -> world.getName().contains(w.getWorldName()))) return null;
+		if (worlds.stream().noneMatch(w -> world.getName().contains(w.getWorldName()) || world.getName().contains(w.getTemplateName()))) return null;
 
-		return worlds.stream().filter(w -> world.getName().contains(w.getWorldName()))
+		return worlds.stream().filter(w -> world.getName().contains(w.getWorldName()) || world.getName().contains(w.getTemplateName()))
 				.findFirst().orElse(null);
 	}
 }

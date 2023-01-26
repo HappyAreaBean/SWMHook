@@ -4,5 +4,6 @@ public enum SWMWorldSearchType {
 	ALL,
 	NORMAL,
 	SLIME_ONLY,
+	SWMH_ONLY,
 	PROVIDER
 }
