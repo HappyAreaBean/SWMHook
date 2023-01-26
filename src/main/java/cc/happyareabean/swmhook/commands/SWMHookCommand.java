@@ -185,7 +185,8 @@ public class SWMHookCommand {
 		actor.reply(text("TIP: ", NamedTextColor.GOLD, TextDecoration.BOLD)
 				.append(text("You will need to reload provider using /swmhook loadprovider, or ", NamedTextColor.YELLOW))
 				.append(text("click here", NamedTextColor.GREEN, TextDecoration.BOLD)
-						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook loadprovider"))));
+						.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook loadprovider")))
+						.hoverEvent(text("Click here to load provider!", NamedTextColor.GREEN, TextDecoration.BOLD)));
 		actor.reply(text("Please also make sure all the world are *loaded* before loading provider.", NamedTextColor.GRAY, TextDecoration.ITALIC));
 		actor.reply(text("Recommend waiting 10 - 20 seconds after reloaded worlds.", NamedTextColor.GRAY, TextDecoration.ITALIC));
 	}
