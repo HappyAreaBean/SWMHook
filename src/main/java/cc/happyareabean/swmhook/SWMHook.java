@@ -3,6 +3,7 @@ package cc.happyareabean.swmhook;
 import cc.happyareabean.swmhook.commands.SWMHookCommand;
 import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
+import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
@@ -38,6 +39,7 @@ public class SWMHook extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		startupMessage();
 
 		worldsList = new SWMHWorldsList(new File(this.getDataFolder(), "worlds.yml").toPath());
 
@@ -172,6 +174,19 @@ public class SWMHook extends JavaPlugin {
 				e.printStackTrace();
 			}
 //		});
+	}
+
+	public void startupMessage() {
+		prefixedLog("");
+		Constants.LOGO_LIST.forEach(SWMHook::prefixedLog);
+		prefixedLog("");
+		prefixedLog(" &2" + getDescription().getDescription());
+		prefixedLog(" &fv" + Constants.VERSION + " &fMade With &4❤ &fBy HappyAreaBean");
+		prefixedLog("");
+	}
+
+	public static void prefixedLog(String message) {
+		Bukkit.getConsoleSender().sendMessage(Color.translate(Constants.PREFIX + message));
 	}
 
 	public static void log(String message) {
