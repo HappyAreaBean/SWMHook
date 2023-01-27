@@ -35,6 +35,10 @@ public abstract class ArenaProvider {
 		return null;
 	}
 
+	public String getProviderFileName()	{
+		return null;
+	}
+
 	public void log(String message) {
 		SWMHook.log(String.format("[%s] %s", getProviderName(), message));
 	}

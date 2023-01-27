@@ -22,8 +22,7 @@ public class EdenArenaProvider extends ArenaProvider {
 		List<Arena> arenas = Arena.getArenas().stream().filter(a -> !a.isEnabled()).collect(Collectors.toList());
 
 		if (arenas.stream().noneMatch(a -> a.getName().equalsIgnoreCase(world.getTemplateName()))) {
-			log(world.getTemplateName(), "No available template in Eden's arenas.yml, please make sure you use template world created a arena first!");
-			log(world.getTemplateName(), "Please ALSO remember the arena MUST be disabled in Eden!");
+			SWMHook.getInstance().getArenaProviderManager().addFailedWorld(world);
 			return;
 		}
 
@@ -77,6 +76,11 @@ public class EdenArenaProvider extends ArenaProvider {
 	@Override
 	public String getProviderName() {
 		return "Eden";
+	}
+
+	@Override
+	public String getProviderFileName() {
+		return "arenas.yml";
 	}
 
 	private ArenaDetail newArenaDetail(Arena arena, String worldName) {

@@ -94,6 +94,7 @@ public class SWMHook extends JavaPlugin {
 
 	public void addToArena() {
 		worldsList.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
+		arenaProviderManager.checkFailedWorld();
 	}
 
 	public void loadAllSWMHWorld() {
@@ -192,6 +193,10 @@ public class SWMHook extends JavaPlugin {
 
 	public static void prefixedLog(String message) {
 		Bukkit.getConsoleSender().sendMessage(Color.translate(Constants.PREFIX + message));
+	}
+
+	public static void prefixedLog() {
+		Bukkit.getConsoleSender().sendMessage(Color.translate(Constants.PREFIX));
 	}
 
 	public static void log(String message) {
