@@ -35,7 +35,6 @@ import revxrsal.commands.help.CommandHelp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static cc.happyareabean.swmhook.constants.Constants.HELP_COMMAND_FORMAT;
@@ -259,93 +258,91 @@ public class SWMHookCommand {
 						  @Switch(value = "hideDup") boolean hideDuplicate,
 						  @Optional String filter) {
 
-		CompletableFuture.runAsync(() -> {
-			int totalWorlds = 0;
+		int totalWorlds = 0;
 
-			List<Component> list = new ArrayList<>();
-			if (filter != null) {
-				list.add(text("Searching for: ", NamedTextColor.WHITE, TextDecoration.BOLD).append(text(filter, NamedTextColor.AQUA)).append(text("...")));
-				if (Bukkit.getWorlds().stream().noneMatch(w -> w.getName().contains(filter))) {
-					list.add(space());
-					list.add(text("No worlds match your search criteria.", NamedTextColor.RED));
-				}
+		List<Component> list = new ArrayList<>();
+		if (filter != null) {
+			list.add(text("Searching for: ", NamedTextColor.WHITE, TextDecoration.BOLD).append(text(filter, NamedTextColor.AQUA)).append(text("...")));
+			if (Bukkit.getWorlds().stream().noneMatch(w -> w.getName().contains(filter))) {
+				list.add(space());
+				list.add(text("No worlds match your search criteria.", NamedTextColor.RED));
+			}
+		}
+
+		if (hideDuplicate)
+			list.add(text("Duplicated are hidden", NamedTextColor.GRAY, TextDecoration.ITALIC));
+
+		List<Component> worldList = new ArrayList<>();
+		Bukkit.getWorlds().stream().filter(w -> {
+			switch (type) {
+				case NORMAL:
+					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) == null;
+				case SLIME_ONLY:
+					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null;
+				case SWMH_ONLY:
+					return SWMHook.getInstance().getWorldsList().getFromWorld(w) != null;
+				case PROVIDER:
+					return SWMHook.getInstance().getArenaProviderManager().getProvider().isArena(w);
+				case ALL:
+				default:
+					return true;
+			}
+		}).filter(w -> filter == null || w.getName().contains(filter))
+				.filter(w -> {
+					if (!hideDuplicate) return true;
+					SWMHWorld swmhWorld = SWMHook.getInstance().getWorldsList().getFromWorld(w);
+					if (swmhWorld != null) {
+						if (w.getName().equals(swmhWorld.getTemplateName()))
+							return true;
+
+						if (w.getName().contains(swmhWorld.getWorldName()))
+							return false;
+					}
+					return true;
+				}).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
+			TextComponent.Builder c = text();
+			c.append(text("   - ", NamedTextColor.GRAY));
+
+			c.append(text(w.getName(), NamedTextColor.GREEN)
+				.hoverEvent(text("Click here to teleport to world ", NamedTextColor.RED, TextDecoration.BOLD).append(text(w.getName(), NamedTextColor.GOLD)))
+				.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook tp " + w.getName())));
+
+			if (type != SWMWorldSearchType.SLIME_ONLY) {
+				c.append(SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null ? Tags.SLIME : empty());
+			} else {
+				c.append(Tags.SLIME);
 			}
 
-			if (hideDuplicate)
-				list.add(text("Duplicated are hidden", NamedTextColor.GRAY, TextDecoration.ITALIC));
+			if (type != SWMWorldSearchType.SWMH_ONLY) {
+				c.append(SWMHook.getInstance().getWorldsList().getFromWorld(w) != null ? Tags.SWMH : empty());
+			} else {
+				c.append(Tags.SWMH);
+			}
 
-			List<Component> worldList = new ArrayList<>();
-			Bukkit.getWorlds().stream().filter(w -> {
-				switch (type) {
-					case NORMAL:
-						return SWMPlugin.getInstance().getNms().getSlimeWorld(w) == null;
-					case SLIME_ONLY:
-						return SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null;
-					case SWMH_ONLY:
-						return SWMHook.getInstance().getWorldsList().getFromWorld(w) != null;
-					case PROVIDER:
-						return SWMHook.getInstance().getArenaProviderManager().getProvider().isArena(w);
-					case ALL:
-					default:
-						return true;
-				}
-			}).filter(w -> filter == null || w.getName().contains(filter))
-					.filter(w -> {
-						if (!hideDuplicate) return true;
-						SWMHWorld swmhWorld = SWMHook.getInstance().getWorldsList().getFromWorld(w);
-						if (swmhWorld != null) {
-							if (w.getName().equals(swmhWorld.getTemplateName()))
-								return true;
-
-							if (w.getName().contains(swmhWorld.getWorldName()))
-								return false;
-						}
-						return true;
-					}).sorted(Comparator.comparing(World::getName)).forEachOrdered(w -> {
-				TextComponent.Builder c = text();
-				c.append(text("   - ", NamedTextColor.GRAY));
-
-				c.append(text(w.getName(), NamedTextColor.GREEN)
-					.hoverEvent(text("Click here to teleport to world ", NamedTextColor.RED, TextDecoration.BOLD).append(text(w.getName(), NamedTextColor.GOLD)))
-					.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook tp " + w.getName())));
-
-				if (type != SWMWorldSearchType.SLIME_ONLY) {
-					c.append(SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null ? Tags.SLIME : empty());
-				} else {
-					c.append(Tags.SLIME);
-				}
-
-				if (type != SWMWorldSearchType.SWMH_ONLY) {
-					c.append(SWMHook.getInstance().getWorldsList().getFromWorld(w) != null ? Tags.SWMH : empty());
-				} else {
-					c.append(Tags.SWMH);
-				}
-
-				ArenaProvider arenaProvider = SWMHook.getInstance().getArenaProviderManager().getProvider();
-				if (type != SWMWorldSearchType.PROVIDER) {
-					if (arenaProvider.isArena(w)) {
-						c.append(Tags.fromProvider(arenaProvider.getProviderName()));
-					}
-				} else {
+			ArenaProvider arenaProvider = SWMHook.getInstance().getArenaProviderManager().getProvider();
+			if (type != SWMWorldSearchType.PROVIDER) {
+				if (arenaProvider.isArena(w)) {
 					c.append(Tags.fromProvider(arenaProvider.getProviderName()));
 				}
+			} else {
+				c.append(Tags.fromProvider(arenaProvider.getProviderName()));
+			}
 
 
-				worldList.add(c.build());
-			});
-
-			totalWorlds = worldList.size();
-			if (totalWorlds > 0) list.add(space());
-			list.addAll(worldList);
-
-			List<Component> finalList = new ArrayList<>();
-			finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
-			finalList.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook World %s &7- &fTotal of &9%s &fworld%s &7- &6[%s]",
-					filter != null ? "Search" : "List", totalWorlds, totalWorlds > 1 ? "s" : "", type)));
-			finalList.addAll(list);
-			finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
-			finalList.forEach(actor::reply);
+			worldList.add(c.build());
 		});
+
+		totalWorlds = worldList.size();
+		if (totalWorlds > 0) list.add(space());
+		list.addAll(worldList);
+
+		List<Component> finalList = new ArrayList<>();
+		finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
+		finalList.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook World %s &7- &fTotal of &9%s &fworld%s &7- &6[%s]",
+				filter != null ? "Search" : "List", totalWorlds, totalWorlds > 1 ? "s" : "", type)));
+		finalList.addAll(list);
+		finalList.add(text("----------------------------------------").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.STRIKETHROUGH));
+		finalList.forEach(actor::reply);
 	}
 
 	public static List<Component> buildCommandHelp(CommandHelp<String> helpEntries, int page, String subCommand) {

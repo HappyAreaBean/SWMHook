@@ -70,7 +70,12 @@ public class EdenArenaProvider extends ArenaProvider {
 
 		Arena arena = Arena.getArena(swmhWorld.getTemplateName());
 
-		return arena.getArenaDetails().stream().anyMatch(a -> a.getA().getWorld().getName().equalsIgnoreCase(world.getName()));
+		return arena.getArenaDetails().stream().anyMatch(a -> {
+			if (a.getA() == null)
+				return false;
+
+			return a.getA().getWorld().getName().equalsIgnoreCase(world.getName());
+		});
 	}
 
 	@Override
