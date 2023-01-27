@@ -6,6 +6,7 @@ import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
+import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.utils.Color;
 import com.grinderwolf.swm.api.SlimePlugin;
@@ -35,6 +36,7 @@ public class SWMHook extends JavaPlugin {
 	@Getter private SWMHWorldsList worldsList;
 	@Getter private ArenaProviderManager arenaProviderManager;
 	@Getter private static SWMHook instance;
+	@Getter private MetricsWrapper metricsWrapper;
 
 	@Override
 	public void onEnable() {
@@ -77,6 +79,8 @@ public class SWMHook extends JavaPlugin {
 		commandHandler.setHelpWriter((command, actor) -> String.format(" &8• &e/%s %s &7- &f%s", command.getPath().toRealString(), command.getUsage(), command.getDescription()));
 		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand());
 		commandHandler.enableAdventure();
+
+		metricsWrapper = new MetricsWrapper(this, 17549);
 
 		info("SWMHook by HappyAreaBean has been enabled!");
 	}
