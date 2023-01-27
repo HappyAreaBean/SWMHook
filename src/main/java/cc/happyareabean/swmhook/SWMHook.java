@@ -47,10 +47,11 @@ public class SWMHook extends JavaPlugin {
 
 		if (worldsList.getWorlds().size() == 1) {
 			if (worldsList.getWorlds().get(0).getTemplateName().equalsIgnoreCase("default")) {
-				log("This look like is your first time running SWMHook");
-				log("SWMHook will not load anything until you configure your worlds.yml properly!");
-				Bukkit.getPluginManager().disablePlugin(this);
-				return;
+				log("====================================================================");
+				log("Look like this is your first time running SWMHook.");
+				log("SWMHook will not load anything until you configure your 'worlds.yml' properly!");
+				log("You can get started by editing 'worlds.yml' or using /swmhook add to add a world!");
+				log("====================================================================");
 			}
 		}
 
