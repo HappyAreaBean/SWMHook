@@ -88,7 +88,7 @@ public class SWMHook extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		unLoadAllSWMHWorld();
-		log("Thank you and good bye!");
+		prefixedLog("Thank you and good bye!");
 	}
 
 	public void addToArena() {
