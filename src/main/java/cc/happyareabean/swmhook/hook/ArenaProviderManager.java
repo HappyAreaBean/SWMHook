@@ -41,7 +41,7 @@ public class ArenaProviderManager {
 	public void providerPluginVersionCheck() {
 		if (provider.getRequiredPluginVersion() == null) return;
 		String version = Bukkit.getPluginManager().getPlugin(provider.getProviderName()).getDescription().getVersion();
-		Semver semver = new Semver(version.contains("-") ? version.split("-")[1] : version);
+		Semver semver = new Semver(version.contains("-") ? version.split("-")[0] : version);
 
 		if (!semver.isGreaterThanOrEqualTo(semver)) {
 			provider.log("The provider is incompatible to your current version.");
