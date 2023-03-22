@@ -89,16 +89,19 @@ public class EdenArenaProvider extends ArenaProvider {
 	}
 
 	private ArenaDetail newArenaDetail(Arena arena, String worldName) {
+		World world = Bukkit.getWorld(worldName);
 		Location a = arena.getA().clone();
 		Location b = arena.getB().clone();
 		Location min = arena.getMin().clone();
 		Location max = arena.getMax().clone();
+		Location spec = arena.getSpectator().clone();
 
-		a.setWorld(Bukkit.getWorld(worldName));
-		b.setWorld(Bukkit.getWorld(worldName));
-		min.setWorld(Bukkit.getWorld(worldName));
-		max.setWorld(Bukkit.getWorld(worldName));
+		a.setWorld(world);
+		b.setWorld(world);
+		min.setWorld(world);
+		max.setWorld(world);
+		spec.setWorld(world);
 
-		return new ArenaDetail(arena, a, b, min, max);
+		return new ArenaDetail(arena, a, b, spec, min, max);
 	}
 }
