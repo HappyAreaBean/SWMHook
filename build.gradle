@@ -7,6 +7,7 @@ plugins {
 
 repositories {
     maven { url = uri('https://repo.fantasyrealms.net/other-snapshots') }
+    maven { url = uri('https://repo.fantasyrealms.net/other-libraries') }
     maven { url = uri('https://repo.fantasyrealms.net/releases') }
     maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
     maven { url = uri('https://repo.glaremasters.me/repository/concuncan/') }
@@ -52,7 +53,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly 'com.grinderwolf:slimeworldmanager-api:2.2.1'
     compileOnly 'com.grinderwolf:slimeworldmanager-plugin:2.2.1'
-    compileOnly "rip.diamond:Eden:1.0.X-BETA"
+    compileOnly "rip.diamond:Eden:1.1.4-1f8eb9a"
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
