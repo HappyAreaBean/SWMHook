@@ -7,6 +7,7 @@ import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.semver4j.Semver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,10 +26,28 @@ public class ArenaProviderManager {
 
 		if (pm.getPlugin("Eden") != null) {
 			this.provider = new EdenArenaProvider();
+		}
+
+		// If provider assigned, verify required version
+		if (provider != null) {
+			providerPluginVersionCheck();
 			return;
 		}
 
+		// If provider not assigned, set to default provider
 		this.provider = new DefaultArenaProvider();
+	}
+
+	public void providerPluginVersionCheck() {
+		if (provider.getRequiredPluginVersion() == null) return;
+		String version = Bukkit.getPluginManager().getPlugin(provider.getProviderName()).getDescription().getVersion();
+		Semver semver = new Semver(version.contains("-") ? version.split("-")[1] : version);
+
+		if (!semver.isGreaterThanOrEqualTo(semver)) {
+			provider.log("The provider is incompatible to your current version.");
+			provider.info(String.format("Required: %s | Your version: %s", provider.getRequiredPluginVersion(), semver.getVersion()));
+			this.provider = new DefaultArenaProvider();
+		}
 	}
 
 	public String getProviderName() {
