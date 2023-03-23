@@ -88,6 +88,11 @@ public class EdenArenaProvider extends ArenaProvider {
 		return "arenas.yml";
 	}
 
+	@Override
+	public String getRequiredPluginVersion() {
+		return "1.1.0";
+	}
+
 	private ArenaDetail newArenaDetail(Arena arena, String worldName) {
 		World world = Bukkit.getWorld(worldName);
 		Location a = arena.getA().clone();
