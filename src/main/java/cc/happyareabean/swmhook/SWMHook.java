@@ -128,7 +128,7 @@ public class SWMHook extends JavaPlugin {
 	}
 
 	public void unLoadAllSWMHWorld() {
-		if (worldsList.getWorlds().size() == 0) return;
+		if (worldsList.getWorlds().get(0).getTemplateName().equalsIgnoreCase("default")) return;
 		worldsList.getWorlds().forEach(world -> {
 
 			if (world.getAmount() == 0) return;
