@@ -18,8 +18,11 @@ repositories {
     mavenLocal()
 }
 
+def versionOnly = project.getProperty("version")
+def versionWithGit = versionOnly + "-${getGitHash()}"
+
 group = 'cc.happyareabean'
-version = project.getProperty("version") + "-${getGitHash()}"
+version = versionWithGit
 description = 'SWMHook'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -76,8 +79,16 @@ tasks.processResources {
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 shadowJar {
-    archiveClassifier.set('')
     archiveVersion.set('')
+}
+
+tasks.register('copyJar', Copy) {
+    dependsOn shadowJar
+    from shadowJar.getArchiveFile()
+    into shadowJar.getArchiveFile().get().getAsFile().parent
+    rename { fileName ->
+        fileName.replace(shadowJar.getArchiveFile().get().getAsFile().getName(), "${project.name}.jar")
+    }
 }
 
 tasks.register('relocateShadowJar', ConfigureShadowRelocation) {
@@ -90,6 +101,7 @@ tasks.shadowJar.dependsOn tasks.relocateShadowJar
 build {
     finalizedBy {
         tasks.shadowJar
+        tasks.copyJar
     }
 }
 
@@ -104,6 +116,8 @@ publishing {
     publications {
         maven(MavenPublication) {
             from(components.java)
+
+            version = versionOnly
         }
     }
 }
