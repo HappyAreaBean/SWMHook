@@ -7,11 +7,21 @@ import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.semver4j.Semver;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class ArenaProviderManager {
@@ -21,8 +31,13 @@ public class ArenaProviderManager {
 	@Getter
 	private List<SWMHWorld> loadFailed = new ArrayList<>();
 
-	public ArenaProviderManager() {
+	public ArenaProviderManager(JavaPlugin plugin) {
 		PluginManager pm = Bukkit.getPluginManager();
+
+		if (loadArenaProviders(plugin, "providers")) {
+			providerPluginVersionCheck();
+			return;
+		}
 
 		if (pm.getPlugin("Eden") != null) {
 			this.provider = new EdenArenaProvider();
@@ -80,5 +95,81 @@ public class ArenaProviderManager {
 		).forEach(SWMHook::prefixedLog);
 
 		loadFailed.clear();
+	}
+
+	public void setProvider(ArenaProvider provider) {
+		this.provider = provider;
+		SWMHook.log("[ArenaProvider] Provider has been changed to: " + provider.getProviderName());
+	}
+
+	private boolean loadArenaProviders(JavaPlugin plugin, String folder) {
+		File modulesFolder = new File(plugin.getDataFolder(), folder);
+		if (!modulesFolder.exists() || !modulesFolder.isDirectory()) {
+			return false;
+		}
+
+		File[] moduleJars = modulesFolder.listFiles((dir, name) -> name.endsWith(".jar"));
+		if (moduleJars == null) {
+			return false;
+		}
+
+		for (File moduleJar : moduleJars) {
+			try (JarFile jar = new JarFile(moduleJar)) {
+				Enumeration<JarEntry> entries = jar.entries();
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (entry.getName().endsWith(".class")) {
+						String className = entry.getName().replace("/", ".").replace(".class", "");
+						try {
+							Class<?> clazz = Class.forName(className, true, new ProviderClassLoader(modulesFolder));
+							if (ArenaProvider.class.isAssignableFrom(clazz)) {
+								ArenaProvider provider = (ArenaProvider) clazz.newInstance();
+								this.setProvider(provider);
+								jar.close();
+								return true;
+							}
+						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	private static class ProviderClassLoader extends URLClassLoader {
+
+		private ProviderClassLoader(File moduleDirectory) {
+			super(new URL[0], ProviderClassLoader.class.getClassLoader());
+			if (!moduleDirectory.exists() || !moduleDirectory.isDirectory()) {
+				return;
+			}
+			for (File moduleFile : Objects.requireNonNull(moduleDirectory.listFiles((dir, name) -> name.endsWith(".jar")))) {
+				try {
+					addURL(moduleFile.toURI().toURL());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		protected Class<?> findClass(String name) throws ClassNotFoundException {
+			try {
+				return super.findClass(name);
+			} catch (ClassNotFoundException e) {
+				return getParent().loadClass(name);
+			}
+		}
+
+		@Override
+		public InputStream getResourceAsStream(String name) {
+			InputStream stream = super.getResourceAsStream(name);
+			return stream != null ? stream : getParent().getResourceAsStream(name);
+		}
+
 	}
 }
