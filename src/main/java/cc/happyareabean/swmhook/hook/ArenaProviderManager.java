@@ -50,10 +50,15 @@ public class ArenaProviderManager {
 		}
 
 		// If provider not assigned, set to default provider
-		this.provider = new DefaultArenaProvider();
+		fallbackToDefault();
 	}
 
 	public void providerPluginVersionCheck() {
+		if (provider.getProviderVersion() == null) {
+			provider.log("Provider doesn't provide a version! Fall back to the default provider.");
+			fallbackToDefault();
+			return;
+		}
 		if (provider.getRequiredPluginVersion() == null) return;
 		String version = Bukkit.getPluginManager().getPlugin(provider.getProviderName()).getDescription().getVersion();
 		Semver semver = new Semver(version.contains("-") ? version.split("-")[0] : version);
@@ -61,12 +66,16 @@ public class ArenaProviderManager {
 		if (!semver.isGreaterThanOrEqualTo(semver)) {
 			provider.log("The provider is incompatible to your current version.");
 			provider.info(String.format("Required: %s | Your version: %s", provider.getRequiredPluginVersion(), semver.getVersion()));
-			this.provider = new DefaultArenaProvider();
+			fallbackToDefault();
 		}
 	}
 
 	public String getProviderName() {
 		return this.provider.getProviderName();
+	}
+
+	public void fallbackToDefault() {
+		this.provider = new DefaultArenaProvider();
 	}
 
 	public static void errorWhenAdding(ArenaProvider provider, SWMHWorld world, String message) {
