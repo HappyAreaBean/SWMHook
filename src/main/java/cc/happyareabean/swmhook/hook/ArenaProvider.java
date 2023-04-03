@@ -43,6 +43,10 @@ public abstract class ArenaProvider {
 		return null;
 	}
 
+	public String getProviderVersion() {
+		return null;
+	}
+
 	public void log(String message) {
 		SWMHook.log(String.format("[%s] %s", getProviderName(), message));
 	}
