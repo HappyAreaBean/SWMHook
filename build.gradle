@@ -79,16 +79,8 @@ tasks.processResources {
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 shadowJar {
+    archiveClassifier.set('')
     archiveVersion.set('')
-}
-
-tasks.register('copyJar', Copy) {
-    dependsOn shadowJar
-    from shadowJar.getArchiveFile()
-    into shadowJar.getArchiveFile().get().getAsFile().parent
-    rename { fileName ->
-        fileName.replace(shadowJar.getArchiveFile().get().getAsFile().getName(), "${project.name}.jar")
-    }
 }
 
 tasks.register('relocateShadowJar', ConfigureShadowRelocation) {
@@ -101,7 +93,6 @@ tasks.shadowJar.dependsOn tasks.relocateShadowJar
 build {
     finalizedBy {
         tasks.shadowJar
-        tasks.copyJar
     }
 }
 
@@ -114,8 +105,8 @@ compileJava { // Preserve parameter names in the bytecode
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            from(components.java)
+        maven(MavenPublication) { publication ->
+            project.shadow.component(publication)
 
             version = versionOnly
         }
