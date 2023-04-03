@@ -5,6 +5,7 @@ import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
+import cc.happyareabean.swmhook.hook.ArenaProvider;
 import cc.happyareabean.swmhook.hook.ArenaProviderManager;
 import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
@@ -56,7 +57,7 @@ public class SWMHook extends JavaPlugin {
 		}
 
 		loadAllSWMHWorld();
-		arenaProviderManager = new ArenaProviderManager();
+		arenaProviderManager = new ArenaProviderManager(this);
 		info("Current arena provider: " + arenaProviderManager.getProviderName());
 
 		new BukkitRunnable() {
@@ -127,6 +128,7 @@ public class SWMHook extends JavaPlugin {
 	}
 
 	public void unLoadAllSWMHWorld() {
+		if (worldsList.getWorlds().size() == 0) return;
 		worldsList.getWorlds().forEach(world -> {
 
 			if (world.getAmount() == 0) return;
@@ -189,6 +191,16 @@ public class SWMHook extends JavaPlugin {
 		prefixedLog(" &2" + getDescription().getDescription());
 		prefixedLog(" &fv" + Constants.VERSION + " &fMade With &4❤ &fBy HappyAreaBean");
 		prefixedLog("");
+	}
+
+	/**
+	 * This method will override the default arena provider when launching.
+	 * Useful if you are creating your own arena provider.
+	 * @param provider A arena provider
+	 */
+	public void setArenaProvider(ArenaProvider provider) {
+		arenaProviderManager.setProvider(provider);
+		log("[SET] Arena provider has been changed to: " + provider.getProviderName());
 	}
 
 	public static void prefixedLog(String message) {
