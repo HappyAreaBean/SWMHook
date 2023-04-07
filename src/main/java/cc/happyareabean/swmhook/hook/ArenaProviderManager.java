@@ -113,7 +113,11 @@ public class ArenaProviderManager {
 
 	private boolean loadArenaProviders(JavaPlugin plugin, String folder) {
 		File modulesFolder = new File(plugin.getDataFolder(), folder);
-		if (!modulesFolder.exists() || !modulesFolder.isDirectory()) {
+		if (!modulesFolder.exists()) {
+			modulesFolder.mkdir();
+		}
+
+		if (!modulesFolder.isDirectory()) {
 			return false;
 		}
 
