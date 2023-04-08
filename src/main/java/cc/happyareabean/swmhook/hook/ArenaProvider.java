@@ -90,6 +90,15 @@ public abstract class ArenaProvider {
 		return null;
 	}
 
+	/**
+	 * The author of this provider
+	 *
+	 * @return the author of this provider
+	 */
+	public String getProviderAuthor() {
+		return null;
+	}
+
 	public void log(String message) {
 		SWMHook.log(String.format("[%s] %s", getProviderName(), message));
 	}
