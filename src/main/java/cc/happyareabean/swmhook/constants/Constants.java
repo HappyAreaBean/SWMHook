@@ -21,6 +21,7 @@ public class Constants {
 	);
 	public static final String PREFIX = Color.translate("&8[&2SWMHook&8] &a");
 	public static final String VERSION = "${pluginVersion}";
+	public static final String RAW_VERSION = "${rawVersion}";
 
 	public static final TextComponent RELOAD_WORLD = Component.text("[Do you want to also reload SWMHook worlds?]",
 					NamedTextColor.WHITE, TextDecoration.BOLD)

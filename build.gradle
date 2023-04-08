@@ -63,6 +63,7 @@ dependencies {
 blossom {
     def constants = "src/main/java/cc/happyareabean/swmhook/constants/Constants.java"
     replaceToken("\${pluginVersion}", version.toString(), constants)
+    replaceToken("\${rawVersion}", versionOnly.toString(), constants)
     replaceToken("\${commit}", getGitHash().toString(), constants)
     replaceToken("\${buildDate}", getDate().toString(), constants)
 }
