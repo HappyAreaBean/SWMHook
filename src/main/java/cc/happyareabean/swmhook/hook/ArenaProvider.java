@@ -14,8 +14,7 @@ public abstract class ArenaProvider {
 	 * <br><br>
 	 * See also {@link #onInitialization()}, {@link #setCanRegister(boolean)} and {@link #isCanRegister()}
 	 */
-	@Getter(value = AccessLevel.PROTECTED)
-	@Setter(value = AccessLevel.PROTECTED)
+	@Getter @Setter
 	public boolean canRegister = true;
 
 	/**

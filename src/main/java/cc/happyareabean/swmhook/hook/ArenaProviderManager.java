@@ -37,7 +37,15 @@ public class ArenaProviderManager {
 
 		if (loadArenaProviders(plugin, PROVIDERS_FOLDER)) {
 			this.provider.onInitialization();
-			if (!this.provider.canRegister) {
+			if (!this.provider.isCanRegister()) {
+				SWMHook.log("====================================================================");
+				SWMHook.log(String.format("The provider %s can't be register!", provider.getProviderName()));
+				SWMHook.log("Please check console to see if there any relevant errors or contact the author.");
+				SWMHook.log("====================================================================");
+				SWMHook.log("Provider name: " + provider.getProviderName());
+				SWMHook.log("Provider version: " + provider.getProviderVersion());
+				SWMHook.log("Provider author: " + provider.getProviderAuthor());
+				SWMHook.log("====================================================================");
 				fallbackToDefault();
 				return;
 			}
