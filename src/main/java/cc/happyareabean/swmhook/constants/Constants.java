@@ -29,4 +29,5 @@ public class Constants {
 
 	public static final String HELP_COMMAND_FORMAT = "/swmhook %s";
 	public static final String PAGE_TEXT = "Page %s";
+	public static final String SWM = "SlimeWorldManager";
 }
