@@ -30,11 +30,17 @@ public class ArenaProviderManager {
 	private ArenaProvider provider;
 	@Getter
 	private List<SWMHWorld> loadFailed = new ArrayList<>();
+	private static final String PROVIDERS_FOLDER = "providers";
 
 	public ArenaProviderManager(JavaPlugin plugin) {
 		PluginManager pm = Bukkit.getPluginManager();
 
-		if (loadArenaProviders(plugin, "providers")) {
+		if (loadArenaProviders(plugin, PROVIDERS_FOLDER)) {
+			this.provider.onInitialization();
+			if (!this.provider.canRegister) {
+				fallbackToDefault();
+				return;
+			}
 			providerPluginVersionCheck();
 			return;
 		}

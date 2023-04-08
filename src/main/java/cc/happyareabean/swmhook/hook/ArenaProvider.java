@@ -2,9 +2,16 @@ package cc.happyareabean.swmhook.hook;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.World;
 
 public abstract class ArenaProvider {
+
+	@Getter(value = AccessLevel.PROTECTED)
+	@Setter(value = AccessLevel.PROTECTED)
+	public boolean canRegister = true;
 
 	/**
 	 * Add arena with provider
@@ -29,6 +36,14 @@ public abstract class ArenaProvider {
 	 */
 	public boolean isArena(World world) {
 		return false;
+	}
+
+	/**
+	 * This will be called before registering the provider
+	 * You can perform some check before it registered to SWMHook
+	 */
+	public void onInitialization() {
+
 	}
 
 	public String getProviderName()	{
