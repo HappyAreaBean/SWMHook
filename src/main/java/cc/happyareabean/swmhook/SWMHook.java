@@ -1,5 +1,6 @@
 package cc.happyareabean.swmhook;
 
+import cc.happyareabean.swmhook.commands.ProviderInfoCommand;
 import cc.happyareabean.swmhook.commands.SWMHookCommand;
 import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
@@ -79,7 +80,7 @@ public class SWMHook extends JavaPlugin {
 			return worldsList.getWorlds().stream().filter(w -> w.getTemplateName().equalsIgnoreCase(value)).findFirst().orElse(null);
 		});
 		commandHandler.setHelpWriter((command, actor) -> String.format(" &8• &e/%s %s &7- &f%s", command.getPath().toRealString(), command.getUsage(), command.getDescription()));
-		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand());
+		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand(), new ProviderInfoCommand());
 		commandHandler.enableAdventure();
 
 		metricsWrapper = new MetricsWrapper(this, 17549);
