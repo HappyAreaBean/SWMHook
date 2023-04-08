@@ -113,6 +113,16 @@ javadoc {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "frsReleases"
+            url = "https://repo.fantasyrealms.net/releases/"
+            credentials {
+                username findProperty("frsRepositoryUsername").toString()
+                password findProperty("frsRepositoryPassword").toString()
+            }
+        }
+    }
     publications {
         maven(MavenPublication) { publication ->
             project.shadow.component(publication)
