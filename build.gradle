@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id 'net.kyori.blossom' version "1.2.0"
+    id "io.freefair.lombok" version "8.0.1"
 }
 
 repositories {
@@ -24,7 +25,6 @@ def versionWithGit = versionOnly + "-${getGitHash()}"
 group = 'cc.happyareabean'
 version = versionWithGit
 description = 'SWMHook'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 String getGitHash() {
     def output = new ByteArrayOutputStream()
@@ -58,12 +58,6 @@ dependencies {
     compileOnly 'com.grinderwolf:slimeworldmanager-api:2.2.1'
     compileOnly 'com.grinderwolf:slimeworldmanager-plugin:2.2.1'
     compileOnly "rip.diamond:Eden:1.1.4-1f8eb9a"
-
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 blossom {
@@ -90,10 +84,21 @@ tasks.register('relocateShadowJar', ConfigureShadowRelocation) {
 
 tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
+tasks.register('javadocJar', Jar) {
+    archiveClassifier.set("javadoc")
+    archiveVersion.set((String) versionOnly)
+    from javadoc
+}
+
 build {
     finalizedBy {
         tasks.shadowJar
     }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    withJavadocJar()
 }
 
 compileJava { // Preserve parameter names in the bytecode
@@ -103,10 +108,15 @@ compileJava { // Preserve parameter names in the bytecode
     options.encoding = 'UTF-8'
 }
 
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
 publishing {
     publications {
         maven(MavenPublication) { publication ->
             project.shadow.component(publication)
+            artifact javadocJar
 
             version = versionOnly
         }
