@@ -1,5 +1,6 @@
 package cc.happyareabean.swmhook.config;
 
+import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMLoaderType;
 import de.exlll.configlib.annotation.ElementType;
@@ -18,8 +19,8 @@ public class SWMHWorldsList extends YamlConfiguration {
 	@ElementType(SWMHWorld.class)
 	private List<SWMHWorld> worlds = Collections.singletonList(SWMHWorld.builder()
 			.loader(SWMLoaderType.FILE)
-			.templateName("default")
-			.worldName("default")
+			.templateName(Constants.DEFAULT_WORLDS_STRING)
+			.worldName(Constants.DEFAULT_WORLDS_STRING)
 			.amount(5)
 			.build());
 

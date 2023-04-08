@@ -39,6 +39,7 @@ public class SWMHook extends JavaPlugin {
 	@Getter private ArenaProviderManager arenaProviderManager;
 	@Getter private static SWMHook instance;
 	@Getter private MetricsWrapper metricsWrapper;
+	private boolean firstTime = false;
 
 	@Override
 	public void onEnable() {
@@ -48,18 +49,31 @@ public class SWMHook extends JavaPlugin {
 		worldsList = new SWMHWorldsList(new File(this.getDataFolder(), "worlds.yml").toPath());
 
 		if (worldsList.getWorlds().size() == 1) {
-			if (worldsList.getWorlds().get(0).getTemplateName().equalsIgnoreCase("default")) {
+			if (worldsList.getWorlds().get(0).getTemplateName().equalsIgnoreCase(Constants.DEFAULT_WORLDS_STRING)) {
 				log("====================================================================");
 				log("Look like this is your first time running SWMHook.");
 				log("SWMHook will not load anything until you configure your 'worlds.yml' properly!");
 				log("You can get started by editing 'worlds.yml' or using /swmhook add to add a world!");
 				log("====================================================================");
+				firstTime = true;
 			}
 		}
 
-		loadAllSWMHWorld();
 		arenaProviderManager = new ArenaProviderManager(this);
 		info("Current arena provider: " + arenaProviderManager.getProviderName());
+
+		if (arenaProviderManager.getProviderName().equals("Default")) {
+			if (!firstTime) {
+				log("====================================================================");
+				log("Look like SWMHook are using default arena provider. Are there something went wrong?");
+				log("");
+				log("Possible fixes:");
+				log("- Check your provider jar is put in the right folder");
+				log("====================================================================");
+			}
+		} else {
+			loadAllSWMHWorld();
+		}
 
 		new BukkitRunnable() {
 			@Override
