@@ -23,7 +23,7 @@ public class ProviderInfoCommand {
 
 	@DefaultFor({"providerinfo"})
 	@Description("Check your current provider nfo")
-	public void world(BukkitCommandActor actor) {
+	public void providerinfo(BukkitCommandActor actor) {
 		ArenaProvider provider = SWMHook.getInstance().getArenaProviderManager().getProvider();
 
 		List<String> list = new ArrayList<>();
