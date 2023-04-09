@@ -36,20 +36,7 @@ public class ArenaProviderManager {
 		PluginManager pm = Bukkit.getPluginManager();
 
 		if (loadArenaProviders(plugin, PROVIDERS_FOLDER)) {
-			this.provider.onInitialization();
-			if (!this.provider.isCanRegister()) {
-				SWMHook.log("====================================================================");
-				SWMHook.log(String.format("The provider %s can't be register!", provider.getProviderName()));
-				SWMHook.log("Please check console to see if there any relevant errors or contact the author.");
-				SWMHook.log("====================================================================");
-				SWMHook.log("Provider name: " + provider.getProviderName());
-				SWMHook.log("Provider version: " + provider.getProviderVersion());
-				SWMHook.log("Provider author: " + provider.getProviderAuthor());
-				SWMHook.log("====================================================================");
-				fallbackToDefault();
-				return;
-			}
-			providerPluginVersionCheck();
+			register(this.provider);
 			return;
 		}
 
@@ -65,6 +52,40 @@ public class ArenaProviderManager {
 
 		// If provider not assigned, set to default provider
 		fallbackToDefault();
+	}
+
+	public void register(ArenaProvider provider) {
+		try {
+			Objects.requireNonNull(provider.getProviderVersion(), "The provider version is null!");
+			Objects.requireNonNull(provider.getProviderName(), "The provider name is null!");
+			Objects.requireNonNull(provider.getProviderAuthor(), "The provider author is null!");
+
+			this.provider.onInitialization();
+			if (!this.provider.isCanRegister()) {
+				SWMHook.log("====================================================================");
+				SWMHook.log(String.format("The provider %s can't be register!", provider.getProviderName()));
+				SWMHook.log("Please check console to see if there any relevant errors or contact the author.");
+				SWMHook.log("====================================================================");
+				SWMHook.log("Provider name: " + provider.getProviderName());
+				SWMHook.log("Provider version: " + provider.getProviderVersion());
+				SWMHook.log("Provider author: " + provider.getProviderAuthor());
+				SWMHook.log("====================================================================");
+				fallbackToDefault();
+				return;
+			}
+			providerPluginVersionCheck();
+		} catch (LinkageError | NullPointerException ex) {
+			final String reason;
+
+			if (ex instanceof LinkageError) {
+				reason = "Is a dependency missing?";
+			} else {
+				reason = ex.getMessage();
+			}
+
+			SWMHook.log(String.format("Failed to load provider class %s: %s", provider.getProviderName(), reason));
+			fallbackToDefault();
+		}
 	}
 
 	public void providerPluginVersionCheck() {
@@ -122,7 +143,8 @@ public class ArenaProviderManager {
 
 	public void setProvider(ArenaProvider provider) {
 		this.provider = provider;
-		SWMHook.log("[ArenaProvider] Provider has been changed to: " + provider.getProviderName());
+		SWMHook.log(String.format("[ArenaProvider] Provider has been changed to: %s [%s] by %s",
+				provider.getProviderName(), provider.getProviderVersion(), provider.getProviderAuthor()));
 	}
 
 	private boolean loadArenaProviders(JavaPlugin plugin, String folder) {
