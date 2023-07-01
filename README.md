@@ -72,9 +72,7 @@ More showcase coming soon :)
 <!-- SUPPORTED PROVIDER -->
 ## Supported Provider
 
-SWMHook currently supports below arena provider:
-
-- [Eden](https://github.com/diamond-rip/Eden)
+**[Click here to view all available SWMHook Providers.](https://go.happyareabean.cc/swmhookproviders)**
 
 More providers will be available soon.
 
