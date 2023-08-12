@@ -11,7 +11,7 @@
 <h3 align="center">SWMHook</h3>
 
   <p>
-    SWMHook is a spigot plugin that lets you use the SlimeWorldManager generated template world as an arena for several plugins.  <br />
+    SWMHook is a spigot plugin that utilize SlimeWorldManager for generating template world as an arena for several plugins.  <br />
     <a href="https://github.com/HappyAreaBean/SWMHook"><strong>Explore the docs »</strong></a>
     <br />
     <br />
