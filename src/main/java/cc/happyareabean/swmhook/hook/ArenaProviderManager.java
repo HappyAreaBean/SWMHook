@@ -2,7 +2,6 @@ package cc.happyareabean.swmhook.hook;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.hook.impl.DefaultArenaProvider;
-import cc.happyareabean.swmhook.hook.impl.EdenArenaProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -38,10 +37,6 @@ public class ArenaProviderManager {
 		if (loadArenaProviders(plugin, PROVIDERS_FOLDER)) {
 			register(this.provider);
 			return;
-		}
-
-		if (pm.getPlugin("Eden") != null) {
-			this.provider = new EdenArenaProvider();
 		}
 
 		// If provider assigned, verify required version

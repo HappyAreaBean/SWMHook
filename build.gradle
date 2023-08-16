@@ -58,7 +58,6 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly 'com.grinderwolf:slimeworldmanager-api:2.2.1'
     compileOnly 'com.grinderwolf:slimeworldmanager-plugin:2.2.1'
-    compileOnly "rip.diamond:Eden:1.1.4-1f8eb9a"
 }
 
 blossom {
