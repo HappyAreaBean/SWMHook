@@ -20,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.DefaultFor;
@@ -32,6 +33,7 @@ import revxrsal.commands.bukkit.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.help.CommandHelp;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -166,6 +168,45 @@ public class SWMHookCommand {
 		worldsList.save();
 		actor.reply(String.format("&aUpdated world &f%s &aloader from &f%s &ato &f%s&a!", swmhWorld.getTemplateName(), oldLoader, loader));
 		actor.reply(Constants.RELOAD_WORLD);
+	}
+
+	@Subcommand({"swlist"})
+	@Description("List all the slime world available in SWM's world config")
+	public void swmList(BukkitCommandActor actor) {
+		File swmFolder = new File(Bukkit.getServer().getUpdateFolderFile().getParentFile(), "SlimeWorldManager");
+		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new File(swmFolder, "worlds.yml"));
+        List<String> worldList = new ArrayList<>(configuration.getConfigurationSection("worlds").getKeys(false));
+
+		int worldSize = worldList.size();
+		List<Component> list = new ArrayList<>();
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
+		list.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSlime World List &7- &fTotal of &9%s &fworld%s",
+				worldSize, worldSize > 1 ? "s" : "")));
+		if (worldSize > 0) {
+			list.add(LEGACY_SERIALIZER.deserialize("&eClick the world name to load or teleport!"));
+			list.add(LEGACY_SERIALIZER.deserialize("&cunloaded &7| &aloaded"));
+			list.add(space());
+			for (String world : worldList) {
+				boolean loaded = Bukkit.getWorld(world) != null;
+				list.add(textOfChildren(
+						text("   - ", NamedTextColor.GRAY),
+						text(String.format("%s", world), loaded ? NamedTextColor.GREEN : NamedTextColor.RED)
+								.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,
+										loaded ? String.format("/swmh tp %s", world) : String.format("/swm load %s", world))))
+								.hoverEvent(textOfChildren(
+										newline(),
+										text(loaded ? "Click to teleport to the world " : "Click to load the world ", NamedTextColor.RED, TextDecoration.BOLD)
+												.append(text(world, NamedTextColor.GOLD, TextDecoration.BOLD))
+								))
+				);
+			}
+		} else {
+			list.add(textOfChildren(
+					text("World list are empty.", NamedTextColor.YELLOW)
+			).decorate(TextDecoration.BOLD));
+		}
+		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
+		list.forEach(actor::reply);
 	}
 
 	@Subcommand("reloadWorlds")

@@ -218,6 +218,10 @@ public class SWMHook extends JavaPlugin {
 		log("[SET] Arena provider has been changed to: " + provider.getProviderName());
 	}
 
+	public SlimePlugin getSlimePlugin() {
+		return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+	}
+
 	public static void prefixedLog(String message) {
 		Bukkit.getConsoleSender().sendMessage(Color.translate(Constants.PREFIX + message));
 	}
