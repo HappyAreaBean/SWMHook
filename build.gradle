@@ -4,6 +4,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id 'net.kyori.blossom' version "1.2.0"
     id "io.freefair.lombok" version "8.0.1"
+    id "xyz.jpenilla.run-paper" version "2.1.0"
 }
 
 repositories {
@@ -66,6 +67,22 @@ blossom {
     replaceToken("\${rawVersion}", versionOnly.toString(), constants)
     replaceToken("\${commit}", getGitHash().toString(), constants)
     replaceToken("\${buildDate}", getDate().toString(), constants)
+}
+
+def mcVersion = "1.8.8"
+def runDirectoryDir = project.hasProperty('runPaper.runDirectory') ? project.getProperty('runPaper.runDirectory') : "${project.rootProject.projectDir}/.run"
+def runServerJar = project.hasProperty('runPaper.serverJar') ? project.getProperty('runPaper.serverJar') : null
+
+tasks {
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion(mcVersion)
+        if (runServerJar != null)
+            serverJar(runDirectory.file(runServerJar as String))
+        runDirectory.set(file(runDirectoryDir))
+    }
 }
 
 tasks.processResources {
