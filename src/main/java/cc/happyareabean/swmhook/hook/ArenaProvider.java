@@ -2,7 +2,6 @@ package cc.happyareabean.swmhook.hook;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;

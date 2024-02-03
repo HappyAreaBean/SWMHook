@@ -1,15 +1,7 @@
 package cc.happyareabean.swmhook.constants;
 
-import cc.happyareabean.swmhook.utils.Color;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-
-import javax.xml.soap.Text;
-import java.util.Arrays;
-import java.util.List;
 
 import static net.kyori.adventure.text.Component.text;
 
