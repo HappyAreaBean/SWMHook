@@ -1,23 +1,18 @@
 package cc.happyareabean.swmhook;
 
+import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
+import cc.happyareabean.swmhook.arenaprovider.ArenaProviderManager;
 import cc.happyareabean.swmhook.commands.ProviderInfoCommand;
 import cc.happyareabean.swmhook.commands.SWMHookCommand;
 import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
-import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
-import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
-import cc.happyareabean.swmhook.arenaprovider.ArenaProviderManager;
+import cc.happyareabean.swmhook.hook.HookProvider;
+import cc.happyareabean.swmhook.hook.HookProviderManager;
 import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.utils.Color;
 import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.plugin.SWMPlugin;
-import com.grinderwolf.swm.plugin.config.ConfigManager;
-import com.grinderwolf.swm.plugin.config.WorldData;
-import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -32,7 +27,6 @@ import revxrsal.commands.bukkit.BukkitCommandHandler;
 import revxrsal.commands.exception.CommandErrorException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.stream.Collectors;
 
 import static net.kyori.adventure.text.Component.space;
@@ -43,6 +37,7 @@ public class SWMHook extends JavaPlugin {
 
 	@Getter private SWMHWorldsList worldsList;
 	@Getter private ArenaProviderManager arenaProviderManager;
+	@Getter private HookProviderManager hookProviderManager;
 	@Getter private static SWMHook instance;
 	@Getter private MetricsWrapper metricsWrapper;
 	private boolean firstTime = false;
@@ -65,13 +60,16 @@ public class SWMHook extends JavaPlugin {
 			}
 		}
 
+		hookProviderManager = new HookProviderManager(this);
+		info("Current hook provider: " + hookProviderManager.getProviderName());
+
 		arenaProviderManager = new ArenaProviderManager(this);
 		info("Current arena provider: " + arenaProviderManager.getProviderName());
 
-		if (arenaProviderManager.getProviderName().equals("Default")) {
+		if (arenaProviderManager.getProviderName().equals("Default") || hookProviderManager.getProviderName().equals("Default")) {
 			if (!firstTime) {
 				log("====================================================================");
-				log("Look like SWMHook are using default arena provider. Are there something went wrong?");
+				log("Look like SWMHook are using default arena or hook provider. Are there something went wrong?");
 				log("");
 				log("Possible fixes:");
 				log("- Check your provider jar is put in the right folder");
@@ -128,21 +126,17 @@ public class SWMHook extends JavaPlugin {
 	}
 
 	public void loadAllSWMHWorld() {
-		SlimePlugin slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-
 		worldsList.getWorlds().forEach(world -> {
+			HookProvider hook = hookProviderManager.getHook();
+			String loaderName = world.getLoader().name();
+			String templateName = world.getTemplateName();
 
-			SlimeLoader loader = slimePlugin.getLoader(world.getLoader().name().toLowerCase());
-			if (loader == null) {
+			if (hook.isLoaderValid(loaderName)) {
 				log(String.format("The loader [%s] for template world [%s] are invalid, skipped loading.", world.getLoader(), world.getTemplateName()));
 				return;
 			}
 
-			try {
-				if (!loader.worldExists(world.getTemplateName())) return;
-			} catch (IOException e) {
-				return;
-			}
+			if (!hook.isWorldExist(templateName, loaderName)) return;
 
 			if (world.getAmount() == 0) return;
 
@@ -150,7 +144,7 @@ public class SWMHook extends JavaPlugin {
 				int currentNumber = i + 1;
 				String toBeGenerated = world.getWorldName() + currentNumber;
 				info(String.format("Loading world: [%s] from template world [%s]...", toBeGenerated, world.getTemplateName()));
-				this.loadWorld(world.getTemplateName(), toBeGenerated, slimePlugin, loader);
+				hook.loadWorld(templateName, toBeGenerated, loaderName);
 			}
 
 		});
@@ -177,40 +171,6 @@ public class SWMHook extends JavaPlugin {
 			}
 
 		});
-	}
-
-	public void loadWorld(String templateWorldName, String worldName, SlimePlugin slimePlugin, SlimeLoader loader) {
-
-		WorldsConfig config = ConfigManager.getWorldConfig();
-		WorldData worldData = config.getWorlds().get(templateWorldName);
-
-//		Bukkit.getScheduler().runTask(this, () -> {
-
-			try {
-				long start = System.currentTimeMillis();
-
-				if (loader == null) {
-					throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
-				}
-
-				SlimeWorld slimeWorld = slimePlugin.loadWorld(loader, templateWorldName, true, worldData.toPropertyMap()).clone(worldName);
-				Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
-					try {
-						SWMPlugin.getInstance().generateWorld(slimeWorld);
-					} catch (IllegalArgumentException ex) {
-						log(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
-						return;
-					}
-
-					info(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
-							+ ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
-					Bukkit.getPluginManager().callEvent(new SWMWorldLoadedEvent(templateWorldName, worldName, true));
-				});
-			} catch (Throwable e) {
-				log(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + e.getMessage() + ".");
-				e.printStackTrace();
-			}
-//		});
 	}
 
 	public void startupMessage() {

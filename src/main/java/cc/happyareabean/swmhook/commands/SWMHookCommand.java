@@ -1,10 +1,10 @@
 package cc.happyareabean.swmhook.commands;
 
 import cc.happyareabean.swmhook.SWMHook;
+import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.constants.Tags;
-import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMLoaderType;
 import cc.happyareabean.swmhook.objects.SWMWorldSearchType;
@@ -173,7 +173,8 @@ public class SWMHookCommand {
 	@Subcommand({"swlist"})
 	@Description("List all the slime world available in SWM's world config")
 	public void swmList(BukkitCommandActor actor) {
-		File swmFolder = new File(Bukkit.getServer().getUpdateFolderFile().getParentFile(), "SlimeWorldManager");
+		File swmFolder = new File(Bukkit.getServer().getUpdateFolderFile().getParentFile(),
+				SWMHook.getInstance().getHookProviderManager().getHook().getPluginName());
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new File(swmFolder, "worlds.yml"));
         List<String> worldList = new ArrayList<>(configuration.getConfigurationSection("worlds").getKeys(false));
 
