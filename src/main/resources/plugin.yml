@@ -5,6 +5,5 @@ author: HappyAreaBean
 website: "https://fantasyrealms.net"
 description: "A plugin that lets you use the SWM generated template world as an arena for several plugins"
 softdepend:
-  - Eden
-depend:
   - SlimeWorldManager
+  - SwoftyWorldManager

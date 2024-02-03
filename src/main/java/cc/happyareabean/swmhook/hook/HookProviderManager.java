@@ -3,6 +3,7 @@ package cc.happyareabean.swmhook.hook;
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.hook.impl.DefaultHookProvider;
 import cc.happyareabean.swmhook.hook.impl.SlimeWorldManagerHookProvider;
+import cc.happyareabean.swmhook.hook.impl.SwoftyWorldManagerHookProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -21,6 +22,11 @@ public class HookProviderManager {
 
 		if (pm.isPluginEnabled("SlimeWorldManager")) {
 			register(new SlimeWorldManagerHookProvider());
+			return;
+		}
+
+		if (pm.isPluginEnabled("SwoftyWorldManager")) {
+			register(new SwoftyWorldManagerHookProvider());
 			return;
 		}
 

@@ -58,6 +58,8 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly 'com.grinderwolf:slimeworldmanager-api:2.2.1'
     compileOnly 'com.grinderwolf:slimeworldmanager-plugin:2.2.1'
+
+    compileOnly 'com.github.Swofty-Developments.Continued-Slime-World-Manager:swoftyworldmanager-api:4.0.0'
 }
 
 blossom {
