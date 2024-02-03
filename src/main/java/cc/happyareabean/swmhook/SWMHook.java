@@ -20,6 +20,9 @@ import com.grinderwolf.swm.plugin.config.WorldData;
 import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -31,6 +34,9 @@ import revxrsal.commands.exception.CommandErrorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.stream.Collectors;
+
+import static net.kyori.adventure.text.Component.space;
+import static net.kyori.adventure.text.Component.text;
 
 @Getter
 public class SWMHook extends JavaPlugin {
@@ -93,7 +99,15 @@ public class SWMHook extends JavaPlugin {
 			}
 			return worldsList.getWorlds().stream().filter(w -> w.getTemplateName().equalsIgnoreCase(value)).findFirst().orElse(null);
 		});
-		commandHandler.setHelpWriter((command, actor) -> String.format(" &8• &e/%s %s &7- &f%s", command.getPath().toRealString(), command.getUsage(), command.getDescription()));
+		commandHandler.setHelpWriter((command, actor) -> {
+			return Component.textOfChildren(
+					space(),
+					text("•", NamedTextColor.DARK_GRAY),
+					space(),
+					text(String.format("/%s %s", command.getPath().toRealString(), command.getUsage()))
+			).hoverEvent(HoverEvent.showText(text(command.getDescription() == null ?
+					"This command does not have a description." : command.getDescription(), NamedTextColor.GREEN)));
+		});
 		commandHandler.register(new SWMHookCommand(), new WorldInfoCommand(), new ProviderInfoCommand());
 		commandHandler.enableAdventure();
 

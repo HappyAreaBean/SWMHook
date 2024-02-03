@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static cc.happyareabean.swmhook.constants.Constants.HELP_COMMAND_FORMAT;
 import static cc.happyareabean.swmhook.constants.Constants.PAGE_TEXT;
@@ -57,7 +56,7 @@ public class SWMHookCommand {
 	@DefaultFor({"swmhook", "swmh"})
 	@Subcommand("help")
 	@Description("SWMHook commands list")
-	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional @Default("1") int page) {
+	public void help(BukkitCommandActor actor, CommandHelp<TextComponent> helpEntries, @Optional @Default("1") int page) {
 		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
 	}
 
@@ -139,7 +138,7 @@ public class SWMHookCommand {
 	@DefaultFor({"swmhook edit", "swmh edit"})
 	@Subcommand("edit help")
 	@Description("SWMHook edit commands list")
-	public void helpEdit(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional @Default("1") int page) {
+	public void helpEdit(BukkitCommandActor actor, CommandHelp<TextComponent> helpEntries, @Optional @Default("1") int page) {
 		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
 	}
 
@@ -387,16 +386,17 @@ public class SWMHookCommand {
 		finalList.forEach(actor::reply);
 	}
 
-	public static List<Component> buildCommandHelp(CommandHelp<String> helpEntries, int page, String subCommand) {
-		if (subCommand != null) helpEntries.removeIf(s -> !s.split("-")[0].contains(subCommand));
+	public static List<Component> buildCommandHelp(CommandHelp<TextComponent> helpEntries, int page, String subCommand) {
+		if (subCommand != null) helpEntries.removeIf(s -> !s.content().split("-")[0].contains(subCommand));
 		int slotPerPage = 5;
 		int maxPages = helpEntries.getPageSize(slotPerPage);
 		List<Component> list = new ArrayList<>();
 		list.add(LEGACY_SERIALIZER.deserialize("&8&m----------------------------------------"));
 		list.add(LEGACY_SERIALIZER.deserialize(String.format("&c&lSWMHook &f(v%s) &7- &fPage &9(%s/%s)", Constants.VERSION, page, maxPages)));
 		list.add(LEGACY_SERIALIZER.deserialize("&fMade With &4❤ &fBy HappyAreaBean"));
+		list.add(LEGACY_SERIALIZER.deserialize("&eHover for more info!"));
 		list.add(space());
-		list.addAll(helpEntries.paginate(page, slotPerPage).stream().map(LEGACY_SERIALIZER::deserialize).collect(Collectors.toList()));
+		list.addAll(helpEntries.paginate(page, slotPerPage));
 		list.add(space());
 		if (maxPages > 1)
 			list.add(paginateNavigation(page, maxPages, subCommand != null ? "/swmhook " + subCommand + "%s" : HELP_COMMAND_FORMAT));
