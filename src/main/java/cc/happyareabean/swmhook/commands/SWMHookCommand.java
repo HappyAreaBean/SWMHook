@@ -4,7 +4,7 @@ import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.constants.Tags;
-import cc.happyareabean.swmhook.hook.ArenaProvider;
+import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMLoaderType;
 import cc.happyareabean.swmhook.objects.SWMWorldSearchType;

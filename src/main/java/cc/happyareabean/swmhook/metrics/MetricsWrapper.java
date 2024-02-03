@@ -1,7 +1,7 @@
 package cc.happyareabean.swmhook.metrics;
 
 import cc.happyareabean.swmhook.SWMHook;
-import cc.happyareabean.swmhook.hook.ArenaProvider;
+import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SingleLineChart;

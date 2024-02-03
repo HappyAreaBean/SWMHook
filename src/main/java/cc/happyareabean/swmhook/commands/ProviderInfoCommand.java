@@ -1,7 +1,7 @@
 package cc.happyareabean.swmhook.commands;
 
 import cc.happyareabean.swmhook.SWMHook;
-import cc.happyareabean.swmhook.hook.ArenaProvider;
+import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Description;

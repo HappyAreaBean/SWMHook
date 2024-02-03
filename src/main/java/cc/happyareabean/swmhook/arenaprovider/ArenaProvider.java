@@ -1,4 +1,4 @@
-package cc.happyareabean.swmhook.hook;
+package cc.happyareabean.swmhook.arenaprovider;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;

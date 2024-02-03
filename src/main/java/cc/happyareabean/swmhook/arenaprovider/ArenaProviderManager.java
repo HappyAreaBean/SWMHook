@@ -1,7 +1,7 @@
-package cc.happyareabean.swmhook.hook;
+package cc.happyareabean.swmhook.arenaprovider;
 
 import cc.happyareabean.swmhook.SWMHook;
-import cc.happyareabean.swmhook.hook.impl.DefaultArenaProvider;
+import cc.happyareabean.swmhook.arenaprovider.impl.DefaultArenaProvider;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
