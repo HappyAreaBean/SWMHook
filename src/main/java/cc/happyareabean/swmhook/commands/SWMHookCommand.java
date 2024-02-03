@@ -23,6 +23,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
+import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Description;
 import revxrsal.commands.annotation.Named;
@@ -56,7 +57,7 @@ public class SWMHookCommand {
 	@DefaultFor({"swmhook", "swmh"})
 	@Subcommand("help")
 	@Description("SWMHook commands list")
-	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional(def = "1") int page) {
+	public void help(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional @Default("1") int page) {
 		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
 	}
 
@@ -113,7 +114,7 @@ public class SWMHookCommand {
 
 	@Subcommand("remove")
 	@Description("Remove a world in SWMHook")
-	public void remove(BukkitCommandActor actor, SWMHWorld swmhWorld, @Optional(def = "false") boolean showList) {
+	public void remove(BukkitCommandActor actor, SWMHWorld swmhWorld, @Optional @Default("false") boolean showList) {
 		if (SWMHook.getInstance().getWorldsList().getWorlds().remove(swmhWorld)) {
 			SWMHook.getInstance().getWorldsList().save();
 			actor.reply(String.format("&cRemoved world &f%s &cin SWMHook!", swmhWorld.toFancyString()));
@@ -138,7 +139,7 @@ public class SWMHookCommand {
 	@DefaultFor({"swmhook edit", "swmh edit"})
 	@Subcommand("edit help")
 	@Description("SWMHook edit commands list")
-	public void helpEdit(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional(def = "1") int page) {
+	public void helpEdit(BukkitCommandActor actor, CommandHelp<String> helpEntries, @Optional @Default("1") int page) {
 		buildCommandHelp(helpEntries, page, null).forEach(actor::reply);
 	}
 
@@ -295,7 +296,7 @@ public class SWMHookCommand {
 	@Subcommand({"worldlist", "wl"})
 	@Description("List current world")
 	public void worldList(BukkitCommandActor actor,
-						  @Optional(def = "ALL") SWMWorldSearchType type,
+						  @Optional @Default("ALL") SWMWorldSearchType type,
 						  @Switch(value = "hideDup") boolean hideDuplicate,
 						  @Optional String filter) {
 
