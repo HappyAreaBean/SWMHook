@@ -1,6 +1,7 @@
 name: SWMHook
 main: cc.happyareabean.swmhook.SWMHook
 version: ${pluginVersion}
+api-version: 1.13
 author: HappyAreaBean
 website: "https://fantasyrealms.net"
 description: "A plugin that lets you use the SWM generated template world as an arena for several plugins"
