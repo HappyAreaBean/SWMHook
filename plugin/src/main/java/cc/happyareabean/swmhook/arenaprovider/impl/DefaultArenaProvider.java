@@ -1,7 +1,7 @@
 package cc.happyareabean.swmhook.arenaprovider.impl;
 
-import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
+import cc.happyareabean.swmhook.constants.Constants;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 
 public class DefaultArenaProvider extends ArenaProvider {

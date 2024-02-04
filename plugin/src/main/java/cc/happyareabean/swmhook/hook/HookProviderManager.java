@@ -1,6 +1,7 @@
 package cc.happyareabean.swmhook.hook;
 
 import cc.happyareabean.swmhook.SWMHook;
+import cc.happyareabean.swmhook.hook.impl.AdvancedSlimePaperHookProvider;
 import cc.happyareabean.swmhook.hook.impl.DefaultHookProvider;
 import cc.happyareabean.swmhook.hook.impl.SlimeWorldManagerHookProvider;
 import cc.happyareabean.swmhook.hook.impl.SwoftyWorldManagerHookProvider;
@@ -21,8 +22,14 @@ public class HookProviderManager {
 		PluginManager pm = Bukkit.getPluginManager();
 
 		if (pm.isPluginEnabled("SlimeWorldManager")) {
-			register(new SlimeWorldManagerHookProvider());
-			return;
+			try {
+				Class.forName("com.infernalsuite.aswm.InternalPlugin");
+				register(new AdvancedSlimePaperHookProvider());
+				return;
+			} catch (ClassNotFoundException ignored) {
+				register(new SlimeWorldManagerHookProvider());
+				return;
+			}
 		}
 
 		if (pm.isPluginEnabled("SwoftyWorldManager")) {
