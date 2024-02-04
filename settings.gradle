@@ -1,5 +1,5 @@
 rootProject.name = 'SWMHook'
-include 'ASWM'
+include 'aswm'
 include 'plugin'
 include 'core'
 

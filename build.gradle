@@ -44,7 +44,7 @@ allprojects {
 }
 
 dependencies {
-    implementation(project("ASWM"))
+    implementation(project("aswm"))
     implementation(project("plugin"))
     implementation(project("core"))
 }

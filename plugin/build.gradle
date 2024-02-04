@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":core"))
-    compileOnly(project(":ASWM"))
+    compileOnly(project(":aswm"))
 
     implementation 'de.exlll:configlib-core:2.2.1'
 
