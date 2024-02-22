@@ -1,7 +1,7 @@
 package cc.happyareabean.swmhook.hook.impl;
 
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
-import cc.happyareabean.swmhook.hook.HookProvider;
+import cc.happyareabean.swmhook.hook.HookAdapter;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -10,12 +10,14 @@ import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.WorldData;
 import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
+import lombok.extern.log4j.Log4j2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.io.IOException;
 
-public class SlimeWorldManagerHookProvider extends HookProvider {
+@Log4j2
+public class SlimeWorldManagerHookAdapter extends HookAdapter {
 
     private final SlimePlugin plugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
 
@@ -51,17 +53,16 @@ public class SlimeWorldManagerHookProvider extends HookProvider {
                 try {
                     SWMPlugin.getInstance().generateWorld(slimeWorld);
                 } catch (IllegalArgumentException ex) {
-                    log(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
+                    log.info(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
                     return;
                 }
 
-                info(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
+                log.info(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
                         + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
                 Bukkit.getPluginManager().callEvent(new SWMWorldLoadedEvent(templateWorldName, worldName, true));
             });
-        } catch (Throwable e) {
-            log(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + e.getMessage() + ".");
-            e.printStackTrace();
+        } catch (Throwable ex) {
+            log.error(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".", ex);
         }
     }
 

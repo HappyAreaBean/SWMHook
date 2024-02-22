@@ -2,7 +2,8 @@ package cc.happyareabean.swmhook.hook.impl;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
-import cc.happyareabean.swmhook.hook.HookProvider;
+import cc.happyareabean.swmhook.hook.HookAdapter;
+import lombok.extern.log4j.Log4j2;
 import net.swofty.swm.api.SlimePlugin;
 import net.swofty.swm.api.loaders.SlimeLoader;
 import net.swofty.swm.api.world.SlimeWorld;
@@ -13,7 +14,8 @@ import org.bukkit.ChatColor;
 
 import java.io.IOException;
 
-public class SwoftyWorldManagerHookProvider extends HookProvider {
+@Log4j2
+public class SwoftyWorldManagerHookAdapter extends HookAdapter {
 
     private final SlimePlugin plugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SwoftyWorldManager");
 
@@ -49,22 +51,21 @@ public class SwoftyWorldManagerHookProvider extends HookProvider {
                 try {
                     plugin.generateWorld(slimeWorld);
                 } catch (IllegalArgumentException ex) {
-                    log(ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
+                    log.info(ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
                     return;
                 }
 
-                info(ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
+                log.info(ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
                         + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
                 Bukkit.getPluginManager().callEvent(new SWMWorldLoadedEvent(templateWorldName, worldName, true));
             });
-        } catch (Throwable e) {
-            log(ChatColor.RED + "Failed to generate world " + worldName + ": " + e.getMessage() + ".");
-            e.printStackTrace();
+        } catch (Throwable ex) {
+            log.error(ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".", ex);
         }
     }
 
     @Override
-    public String getProviderName() {
+    public String getAdapterName() {
         return "Continued Slime World Manager";
     }
 

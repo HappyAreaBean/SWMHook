@@ -1,11 +1,10 @@
 package cc.happyareabean.swmhook.hook;
 
-import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class HookProvider {
+public abstract class HookAdapter {
 
 	/**
 	 * This will determine whether can this provider can be register or not, default is true.
@@ -45,7 +44,7 @@ public abstract class HookProvider {
 	 *
 	 * @return name of this provider
 	 */
-	public String getProviderName() {
+	public String getAdapterName() {
 		return getPluginName();
 	}
 
@@ -62,21 +61,5 @@ public abstract class HookProvider {
 	 * @return the author of this provider
 	 */
 	public abstract String getProviderAuthor();
-
-	public void log(String message) {
-		SWMHook.log(String.format("[%s] %s", getProviderName(), message));
-	}
-
-	public void log(String arena, String message) {
-		SWMHook.log(String.format("[%s] [%s] %s", getProviderName(), arena, message));
-	}
-
-	public void info(String message) {
-		SWMHook.info(String.format("[%s] %s", getProviderName(), message));
-	}
-
-	public void success(String message) {
-		SWMHook.success(String.format("[%s] %s", getProviderName(), message));
-	}
 
 }

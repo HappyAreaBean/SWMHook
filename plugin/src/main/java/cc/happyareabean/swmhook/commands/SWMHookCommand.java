@@ -174,7 +174,7 @@ public class SWMHookCommand {
 	@Description("List all the slime world available in SWM's world config")
 	public void swmList(BukkitCommandActor actor) {
 		File swmFolder = new File(Bukkit.getServer().getUpdateFolderFile().getParentFile(),
-				SWMHook.getInstance().getHookProviderManager().getHook().getPluginName());
+				SWMHook.getInstance().getHookAdapterManager().getHook().getPluginName());
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(new File(swmFolder, "worlds.yml"));
         List<String> worldList = new ArrayList<>(configuration.getConfigurationSection("worlds").getKeys(false));
 

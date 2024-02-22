@@ -1,8 +1,8 @@
 package cc.happyareabean.swmhook.hook.impl;
 
-import cc.happyareabean.swmhook.hook.HookProvider;
+import cc.happyareabean.swmhook.hook.HookAdapter;
 
-public class DefaultHookProvider extends HookProvider {
+public class DefaultHookAdapter extends HookAdapter {
 
 	@Override
 	public boolean isLoaderValid(String loader) {
@@ -30,7 +30,7 @@ public class DefaultHookProvider extends HookProvider {
 	}
 
 	@Override
-	public String getProviderName() {
+	public String getAdapterName() {
 		return "Default";
 	}
 }

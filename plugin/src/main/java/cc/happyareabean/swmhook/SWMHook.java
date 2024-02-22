@@ -7,8 +7,8 @@ import cc.happyareabean.swmhook.commands.SWMHookCommand;
 import cc.happyareabean.swmhook.commands.WorldInfoCommand;
 import cc.happyareabean.swmhook.config.SWMHWorldsList;
 import cc.happyareabean.swmhook.constants.Constants;
-import cc.happyareabean.swmhook.hook.HookProvider;
-import cc.happyareabean.swmhook.hook.HookProviderManager;
+import cc.happyareabean.swmhook.hook.HookAdapter;
+import cc.happyareabean.swmhook.hook.HookAdapterManager;
 import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.utils.Color;
@@ -37,7 +37,7 @@ public class SWMHook extends JavaPlugin {
 
 	@Getter private SWMHWorldsList worldsList;
 	@Getter private ArenaProviderManager arenaProviderManager;
-	@Getter private HookProviderManager hookProviderManager;
+	@Getter private HookAdapterManager hookAdapterManager;
 	@Getter private static SWMHook instance;
 	@Getter private MetricsWrapper metricsWrapper;
 	private boolean firstTime = false;
@@ -60,13 +60,13 @@ public class SWMHook extends JavaPlugin {
 			}
 		}
 
-		hookProviderManager = new HookProviderManager(this);
-		info("Current hook provider: " + hookProviderManager.getProviderName());
+		hookAdapterManager = new HookAdapterManager(this);
+		info("Current hook provider: " + hookAdapterManager.getProviderName());
 
 		arenaProviderManager = new ArenaProviderManager(this);
 		info("Current arena provider: " + arenaProviderManager.getProviderName());
 
-		if (arenaProviderManager.getProviderName().equals("Default") || hookProviderManager.getProviderName().equals("Default")) {
+		if (arenaProviderManager.getProviderName().equals("Default") || hookAdapterManager.getProviderName().equals("Default")) {
 			if (!firstTime) {
 				log("====================================================================");
 				log("Look like SWMHook are using default arena or hook provider. Are there something went wrong?");
@@ -127,16 +127,16 @@ public class SWMHook extends JavaPlugin {
 
 	public void loadAllSWMHWorld() {
 		worldsList.getWorlds().forEach(world -> {
-			HookProvider hook = hookProviderManager.getHook();
-			String loaderName = world.getLoader().name();
+			HookAdapter hook = hookAdapterManager.getHook();
+			String loaderName = world.getLoader().name().toLowerCase();
 			String templateName = world.getTemplateName();
 
-			if (hook.isLoaderValid(loaderName)) {
-				log(String.format("The loader [%s] for template world [%s] are invalid, skipped loading.", world.getLoader(), world.getTemplateName()));
-				return;
-			}
-
-			if (!hook.isWorldExist(templateName, loaderName)) return;
+//			if (hook.isLoaderValid(loaderName)) {
+//				log(String.format("The loader [%s] for template world [%s] are invalid, skipped loading.", world.getLoader(), world.getTemplateName()));
+//				return;
+//			}
+//
+//			if (!hook.isWorldExist(templateName, loaderName)) return;
 
 			if (world.getAmount() == 0) return;
 

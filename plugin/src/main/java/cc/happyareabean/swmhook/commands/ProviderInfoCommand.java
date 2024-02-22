@@ -2,7 +2,7 @@ package cc.happyareabean.swmhook.commands;
 
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
-import cc.happyareabean.swmhook.hook.HookProvider;
+import cc.happyareabean.swmhook.hook.HookAdapter;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Description;
@@ -20,7 +20,7 @@ public class ProviderInfoCommand {
 	@Description("Check your current provider nfo")
 	public void providerinfo(BukkitCommandActor actor) {
 		ArenaProvider provider = SWMHook.getInstance().getArenaProviderManager().getProvider();
-		HookProvider hook = SWMHook.getInstance().getHookProviderManager().getHook();
+		HookAdapter hook = SWMHook.getInstance().getHookAdapterManager().getHook();
 
 		List<String> list = new ArrayList<>();
 		list.add("&8&m----------------------------------------");
@@ -29,8 +29,8 @@ public class ProviderInfoCommand {
 		list.add(String.format("   Version: &a%s", provider.getProviderVersion()));
 		list.add(String.format("   Author: &a%s", provider.getProviderAuthor()));
 		list.add(String.format("   Required plugin version: &a%s", provider.getRequiredPluginVersion() == null ? "None" : provider.getRequiredPluginVersion()));
-		list.add(" &b&lHook Provider");
-		list.add(String.format("   Name: &a%s", hook.getProviderName()));
+		list.add(" &b&lHook Adapter");
+		list.add(String.format("   Name: &a%s", hook.getAdapterName()));
 		list.add(String.format("   Plugin: &a%s", hook.getPluginName()));
 		list.add(String.format("   Author: &a%s", hook.getProviderAuthor()));
 		list.add("&8&m----------------------------------------");
