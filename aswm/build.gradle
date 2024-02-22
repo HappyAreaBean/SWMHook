@@ -4,6 +4,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.infernalsuite.com/repository/maven-snapshots/" }
 }
 
 def mcVersion = "1.20.4"
@@ -15,7 +16,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot:$mcVersion-R0.1-SNAPSHOT"
 
     compileOnly "com.infernalsuite.aswm:api:$mcVersion-R0.1-SNAPSHOT"
-    compileOnly "com.infernalsuite.aswm:plugin:$mcVersion-R0.1-SNAPSHOT"
+    //compileOnly "com.infernalsuite.aswm:plugin:$mcVersion-R0.1-SNAPSHOT"
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
