@@ -3,7 +3,6 @@ package cc.happyareabean.swmhook.commands;
 import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.utils.Color;
-import com.grinderwolf.swm.plugin.SWMPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
@@ -36,7 +35,7 @@ public class WorldInfoCommand {
 		List<String> list = new ArrayList<>();
 		list.add("&8&m----------------------------------------");
 		list.add(String.format("World name: &b&l%s", world.getName()));
-		list.add(String.format("Is it in slime format: &a%s", Color.toColorBoolean(SWMPlugin.getInstance().getNms().getSlimeWorld(world) != null)));
+		list.add(String.format("Is it in slime format: &a%s", Color.toColorBoolean(SWMHook.getInstance().getHookAdapterManager().getHook().isSlimeWorld(world))));
 		list.add(String.format("Is it in SWMHook World Template: &a%s", Color.toColorBoolean(swmhWorld != null)));
 		list.add(String.format("In Arena Provider: &a&l%s", swmhWorld == null ? Color.toColorBoolean(false) :
 				String.format("&6&l%s &7- &e&l%s", SWMHook.getInstance().getArenaProviderManager().getProviderName(), swmhWorld.getTemplateName())));

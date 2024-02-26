@@ -1,6 +1,7 @@
 package cc.happyareabean.swmhook.hook.impl;
 
 import cc.happyareabean.swmhook.hook.HookAdapter;
+import org.bukkit.World;
 
 public class DefaultHookAdapter extends HookAdapter {
 
@@ -11,6 +12,11 @@ public class DefaultHookAdapter extends HookAdapter {
 
 	@Override
 	public boolean isWorldExist(String worldName, String loader) {
+		return false;
+	}
+
+	@Override
+	public boolean isSlimeWorld(World world) {
 		return false;
 	}
 

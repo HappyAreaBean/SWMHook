@@ -3,6 +3,7 @@ package cc.happyareabean.swmhook.hook;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.World;
 
 public abstract class HookAdapter {
 
@@ -27,6 +28,13 @@ public abstract class HookAdapter {
 	 * @return <b>true</b> if the world name is existed in the HookProvider, else <b>false</b>
 	 */
 	public abstract boolean isWorldExist(String worldName, String loader);
+
+	/**
+	 * Check is the world is a slime world
+	 * @param world The bukkit world name
+	 * @return <b>true</b> if the world name is a slime world HookProvider, else <b>false</b>
+	 */
+	public abstract boolean isSlimeWorld(World world);
 
 	/**
 	 * Load the world from the HookProvider.

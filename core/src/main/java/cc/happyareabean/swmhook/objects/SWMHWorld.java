@@ -23,9 +23,13 @@ public class SWMHWorld {
 	@Builder.Default
 	private String worldName = "default";
 	@Builder.Default
-	private int amount = 5;
+	private SWMWorldType type = SWMWorldType.STATIC;
+	@Builder.Default
+	private int amount = 3;
+	@Builder.Default
+	private int min = 3;
 
 	public String toFancyString() {
-		return String.format("Template=%s, WorldName=%s, Amount=%s, Loader=%s", templateName, worldName, amount, loader);
+		return String.format("Template=%s, WorldName=%s, Min=%s, Loader=%s", templateName, worldName, min, loader);
 	}
 }

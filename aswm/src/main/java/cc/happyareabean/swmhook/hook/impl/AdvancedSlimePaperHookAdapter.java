@@ -1,5 +1,6 @@
 package cc.happyareabean.swmhook.hook.impl;
 
+import cc.happyareabean.swmhook.event.SWMWorldLoadedEvent;
 import cc.happyareabean.swmhook.hook.HookAdapter;
 import com.infernalsuite.aswm.api.SlimePlugin;
 import com.infernalsuite.aswm.api.loaders.SlimeLoader;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,34 +38,40 @@ public class AdvancedSlimePaperHookAdapter extends HookAdapter {
     }
 
     @Override
+    public boolean isSlimeWorld(World world) {
+        return plugin.getWorld(world.getName()) != null;
+    }
+
+    @Override
     public void loadWorld(String templateWorldName, String worldName, String loaderName) {
         SlimeLoader loader = plugin.getLoader(loaderName);
 
-        Bukkit.getScheduler().runTaskAsynchronously((Plugin) plugin, () -> {
-            try {
-                long start = System.currentTimeMillis();
+        try {
+            long start = System.currentTimeMillis();
 
-                if (loader == null) {
-                    log.error("Invalid data source " + loaderName);
-                }
-
-                SlimeWorld slimeWorld = plugin.getWorld(templateWorldName);
-                if (slimeWorld == null) {
-                    slimeWorld = plugin.loadWorld(
-                            loader,
-                            templateWorldName,
-                            true,
-                            createPropertyMap(0, 100, 0)
-                    );
-                }
-
-                slimeWorld.clone(worldName);
-
-                log.info(ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
-            } catch (Throwable ex) {
-                log.error(ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".", ex);
+            if (loader == null) {
+                log.error("Invalid data source " + loaderName);
             }
-        });
+
+            SlimeWorld slimeWorld = plugin.getWorld(templateWorldName);
+            if (slimeWorld == null) {
+                slimeWorld = plugin.loadWorld(
+                        loader,
+                        templateWorldName,
+                        true,
+                        createPropertyMap(0, 100, 0)
+                );
+            }
+
+            SlimeWorld finalWorld = slimeWorld.clone(worldName);
+
+            plugin.loadWorld(finalWorld);
+
+            log.info(ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
+            Bukkit.getScheduler().runTask((Plugin) plugin, () -> Bukkit.getPluginManager().callEvent(new SWMWorldLoadedEvent(templateWorldName, worldName, true)));
+        } catch (Throwable ex) {
+            log.error(ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".", ex);
+        }
     }
 
     @Override

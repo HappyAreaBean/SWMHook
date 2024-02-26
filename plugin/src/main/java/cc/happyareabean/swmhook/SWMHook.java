@@ -2,6 +2,7 @@ package cc.happyareabean.swmhook;
 
 import cc.happyareabean.swmhook.arenaprovider.ArenaProvider;
 import cc.happyareabean.swmhook.arenaprovider.ArenaProviderManager;
+import cc.happyareabean.swmhook.arenaprovider.listener.ArenaProviderListener;
 import cc.happyareabean.swmhook.commands.ProviderInfoCommand;
 import cc.happyareabean.swmhook.commands.SWMHookCommand;
 import cc.happyareabean.swmhook.commands.WorldInfoCommand;
@@ -11,6 +12,7 @@ import cc.happyareabean.swmhook.hook.HookAdapter;
 import cc.happyareabean.swmhook.hook.HookAdapterManager;
 import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
+import cc.happyareabean.swmhook.objects.SWMWorldType;
 import cc.happyareabean.swmhook.utils.Color;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
@@ -27,6 +29,7 @@ import revxrsal.commands.bukkit.BukkitCommandHandler;
 import revxrsal.commands.exception.CommandErrorException;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static net.kyori.adventure.text.Component.space;
@@ -66,6 +69,8 @@ public class SWMHook extends JavaPlugin {
 		arenaProviderManager = new ArenaProviderManager(this);
 		info("Current arena provider: " + arenaProviderManager.getProviderName());
 
+		Bukkit.getPluginManager().registerEvents(new ArenaProviderListener(), this);
+
 		if (arenaProviderManager.getProviderName().equals("Default") || hookAdapterManager.getProviderName().equals("Default")) {
 			if (!firstTime) {
 				log("====================================================================");
@@ -76,15 +81,15 @@ public class SWMHook extends JavaPlugin {
 				log("====================================================================");
 			}
 		} else {
-			loadAllSWMHWorld();
+			// This need to run after the server are fully booted up
+			// Because the ArenaProvider won't be able to register the arena.
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					loadAllSWMHWorld();
+				}
+			}.runTaskLater(this, 1L);
 		}
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				addToArena();
-			}
-		}.runTaskLater(this, 1);
 
 		info("Loading commands...");
 		BukkitCommandHandler commandHandler = BukkitCommandHandler.create(this);
@@ -120,11 +125,6 @@ public class SWMHook extends JavaPlugin {
 		prefixedLog("Thank you and good bye!");
 	}
 
-	public void addToArena() {
-		worldsList.getWorlds().forEach(w -> arenaProviderManager.getProvider().addArena(w));
-		arenaProviderManager.checkFailedWorld();
-	}
-
 	public void loadAllSWMHWorld() {
 		worldsList.getWorlds().forEach(world -> {
 			HookAdapter hook = hookAdapterManager.getHook();
@@ -138,16 +138,32 @@ public class SWMHook extends JavaPlugin {
 //
 //			if (!hook.isWorldExist(templateName, loaderName)) return;
 
-			if (world.getAmount() == 0) return;
+			if (world.getType() == SWMWorldType.STATIC && world.getAmount() == 0) return;
 
-			for (int i = 0; i < world.getAmount(); i++) {
+			int amount = world.getType() == SWMWorldType.STATIC ? world.getAmount() : world.getMin();
+
+			for (int i = 0; i < amount; i++) {
 				int currentNumber = i + 1;
-				String toBeGenerated = world.getWorldName() + currentNumber;
-				info(String.format("Loading world: [%s] from template world [%s]...", toBeGenerated, world.getTemplateName()));
+				String toBeGenerated = world.getWorldName() + (world.getType() == SWMWorldType.STATIC ? currentNumber : "_" + UUID.randomUUID());
+				info(String.format("Loading world: [%s] from [%s]...", toBeGenerated, world.getTemplateName()));
 				hook.loadWorld(templateName, toBeGenerated, loaderName);
 			}
 
 		});
+	}
+
+	/**
+	 * <strong>ON DEMAND USES ONLY</strong>
+	 * @param world a SWMHWorld object
+	 */
+	public void generateWorld(SWMHWorld world) {
+		HookAdapter hook = hookAdapterManager.getHook();
+		String loaderName = world.getLoader().name().toLowerCase();
+		String templateName = world.getTemplateName();
+
+		String toBeGenerated = world.getWorldName() + "_" + UUID.randomUUID();
+		info(String.format("Loading world: [%s] from [%s]...", toBeGenerated, world.getTemplateName()));
+		hook.loadWorld(templateName, toBeGenerated, loaderName);
 	}
 
 	public void unLoadAllSWMHWorld() {

@@ -35,4 +35,11 @@ public class SWMHWorldsList extends YamlConfiguration {
 		return worlds.stream().filter(w -> world.getName().contains(w.getWorldName()) || world.getName().contains(w.getTemplateName()))
 				.findFirst().orElse(null);
 	}
+
+	public SWMHWorld getFromName(String templateWorldName) {
+		if (worlds.stream().noneMatch(w -> templateWorldName.equalsIgnoreCase(w.getTemplateName()))) return null;
+
+		return worlds.stream().filter(w -> templateWorldName.equalsIgnoreCase(w.getTemplateName()))
+				.findFirst().orElse(null);
+	}
 }

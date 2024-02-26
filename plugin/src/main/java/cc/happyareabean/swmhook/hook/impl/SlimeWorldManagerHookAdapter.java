@@ -13,6 +13,7 @@ import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 
 import java.io.IOException;
 
@@ -33,6 +34,11 @@ public class SlimeWorldManagerHookAdapter extends HookAdapter {
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isSlimeWorld(World world) {
+        return ((SWMPlugin) plugin).getNms().getSlimeWorld(world) != null;
     }
 
     @Override

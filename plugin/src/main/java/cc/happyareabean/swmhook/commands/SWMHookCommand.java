@@ -8,8 +8,7 @@ import cc.happyareabean.swmhook.constants.Tags;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMLoaderType;
 import cc.happyareabean.swmhook.objects.SWMWorldSearchType;
-import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.plugin.SWMPlugin;
+import cc.happyareabean.swmhook.objects.SWMWorldType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -92,18 +91,18 @@ public class SWMHookCommand {
 
 	@Subcommand("add")
 	@Description("Add a world to SWMHook")
-	public void add(BukkitCommandActor actor, World world, @Named("worldName/-") String worldName, int amount, SWMLoaderType loaderType) {
-		SlimeWorld slimeWorld = SWMPlugin.getInstance().getNms().getSlimeWorld(world);
+	public void add(BukkitCommandActor actor, World world, @Named("worldName/-") String worldName, SWMWorldType worldType, int amount, SWMLoaderType loaderType) {
+		boolean isSlimeWorld = SWMHook.getInstance().getHookAdapterManager().getHook().isSlimeWorld(world);
 
-		if (slimeWorld == null) {
+		if (!isSlimeWorld) {
 			actor.error("The target world need to be a slime world!");
 			return;
 		}
 
 		if (worldName.equals("-"))
-			worldName = slimeWorld.getName();
+			worldName = world.getName();
 
-		SWMHWorld swmhWorld = new SWMHWorld(loaderType, slimeWorld.getName(), worldName, amount);
+		SWMHWorld swmhWorld = new SWMHWorld(loaderType, world.getName(), worldName, worldType, amount, amount);
 
 		SWMHook.getInstance().getWorldsList().getWorlds().add(swmhWorld);
 		SWMHook.getInstance().getWorldsList().save();
@@ -318,9 +317,9 @@ public class SWMHookCommand {
 		Bukkit.getWorlds().stream().filter(w -> {
 			switch (type) {
 				case NORMAL:
-					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) == null;
+					return !SWMHook.getInstance().getHookAdapterManager().getHook().isSlimeWorld(w);
 				case SLIME_ONLY:
-					return SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null;
+					return SWMHook.getInstance().getHookAdapterManager().getHook().isSlimeWorld(w);
 				case SWMH_ONLY:
 					return SWMHook.getInstance().getWorldsList().getFromWorld(w) != null;
 				case PROVIDER:
@@ -350,7 +349,7 @@ public class SWMHookCommand {
 				.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/swmhook tp " + w.getName())));
 
 			if (type != SWMWorldSearchType.SLIME_ONLY) {
-				c.append(SWMPlugin.getInstance().getNms().getSlimeWorld(w) != null ? Tags.SLIME : empty());
+				c.append(SWMHook.getInstance().getHookAdapterManager().getHook().isSlimeWorld(w) ? Tags.SLIME : empty());
 			} else {
 				c.append(Tags.SLIME);
 			}

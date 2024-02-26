@@ -5,6 +5,7 @@ import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.World;
+import org.bukkit.event.Listener;
 
 public abstract class ArenaProvider {
 
@@ -17,7 +18,7 @@ public abstract class ArenaProvider {
 	public boolean canRegister = true;
 
 	/**
-	 * Add arena with provider
+	 * Add an arena with provider [STATIC]
 	 * @param world A SWMHWorld object
 	 */
 	public void addArena(SWMHWorld world) {
@@ -25,10 +26,28 @@ public abstract class ArenaProvider {
 	}
 
 	/**
-	 * Remove arena from provider
+	 * Remove an arena from provider [STATIC]
 	 * @param world A SWMHWorld object
 	 */
 	public void removeArena(SWMHWorld world) {
+
+	}
+
+	/**
+	 * Load an arena to the provider [ON DEMAND]
+	 * @param arenaName the associated arenaName
+	 * @param world A bukkit world
+	 */
+	public void loadArena(String arenaName, World world) {
+
+	}
+
+	/**
+	 * Unload an arena to the provider [ON DEMAND]
+	 * @param arenaName the associated arenaName
+	 * @param world A bukkit world
+	 */
+	public void unloadArena(String arenaName, World world) {
 
 	}
 
@@ -50,6 +69,10 @@ public abstract class ArenaProvider {
 	 */
 	public void onInitialization() {
 
+	}
+
+	public Listener listener() {
+		return null;
 	}
 
 	/**

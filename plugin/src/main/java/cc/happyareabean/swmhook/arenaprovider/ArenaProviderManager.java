@@ -69,6 +69,9 @@ public class ArenaProviderManager {
 				return;
 			}
 			providerPluginVersionCheck();
+
+			if (provider.listener() != null)
+				Bukkit.getPluginManager().registerEvents(provider.listener(), SWMHook.getInstance());
 		} catch (LinkageError | NullPointerException ex) {
 			final String reason;
 

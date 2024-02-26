@@ -7,8 +7,8 @@ import cc.happyareabean.swmhook.objects.SWMHWorld;
 public class DefaultArenaProvider extends ArenaProvider {
 
 	@Override
-	public void addArena(SWMHWorld world) {
-		super.addArena(world);
+	public void addArena(SWMHWorld swmhWorld) {
+		super.addArena(swmhWorld);
 	}
 
 	@Override

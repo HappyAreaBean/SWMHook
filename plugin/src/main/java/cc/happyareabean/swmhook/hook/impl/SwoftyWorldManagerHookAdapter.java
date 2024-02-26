@@ -11,6 +11,7 @@ import net.swofty.swm.api.world.data.WorldData;
 import net.swofty.swm.api.world.data.WorldsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 
 import java.io.IOException;
 
@@ -31,6 +32,11 @@ public class SwoftyWorldManagerHookAdapter extends HookAdapter {
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isSlimeWorld(World world) {
+        return plugin.getSlimeWorlds().containsKey(world.getName());
     }
 
     @Override
