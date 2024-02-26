@@ -237,7 +237,7 @@ public class SWMHookCommand {
 		SWMHook plugin = SWMHook.getInstance();
 		long start = System.currentTimeMillis();
 		actor.reply(String.format("&eAdding worlds to arena with provider &f%s...", plugin.getArenaProviderManager().getProviderName()));
-		plugin.addToArena();
+		plugin.loadAllSWMHWorld();
 		long end = System.currentTimeMillis();
 		actor.reply(String.format("&a&lDone! &eUsed &f%sms", (end - start)));
 	}
