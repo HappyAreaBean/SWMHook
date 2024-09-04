@@ -29,16 +29,18 @@ allprojects {
     description = 'SWMHook'
 
     repositories {
+        mavenCentral()
+
         maven { url = uri('https://repo.fantasyrealms.net/other-snapshots') }
         maven { url = uri('https://repo.fantasyrealms.net/other-libraries') }
         maven { url = uri('https://repo.fantasyrealms.net/releases') }
         maven { url = uri('https://repo.codemc.io/repository/nms/') }
         maven { url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/') }
         maven { url = uri('https://repo.glaremasters.me/repository/concuncan/') }
+        maven { url = uri('https://repo.glaremasters.me/repository/public/') }
         maven { url = uri('https://repo.maven.apache.org/maven2/') }
         maven { url = uri('https://jitpack.io') }
 
-        mavenCentral()
         mavenLocal()
     }
 }
