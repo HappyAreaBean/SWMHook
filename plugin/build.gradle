@@ -16,7 +16,7 @@ dependencies {
     compileOnly(project(":core"))
     compileOnly(project(":aswm"))
 
-    implementation 'de.exlll:configlib-core:2.2.1'
+    implementation 'de.exlll:configlib-core:2.3.0'
 
     implementation 'com.github.Revxrsal.Lamp:common:3.1.9'
     implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.9'
