@@ -62,3 +62,9 @@ blossom {
 test {
     useJUnitPlatform()
 }
+
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.encoding = 'UTF-8'
+}
