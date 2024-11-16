@@ -59,7 +59,9 @@ public class SlimeWorldPluginHookAdapter extends HookAdapter {
 
             CompletableFuture.runAsync(() -> {
                 try {
-                    SlimeWorld world = asp.readWorld(loader, templateWorldName, false, createPropertyMap(0, 100, 0));
+                    SlimeWorld world = asp.getLoadedWorld(templateWorldName) == null ?
+                            asp.readWorld(loader, templateWorldName, false, createPropertyMap(0, 100, 0)) :
+                            asp.getLoadedWorld(templateWorldName);
                     SlimeWorld slimeWorld = world.clone(worldName);
 
                     Bukkit.getScheduler().runTask(plugin, () -> {
