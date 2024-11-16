@@ -8,3 +8,4 @@ description: "A plugin that lets you use the SWM generated template world as an 
 softdepend:
   - SlimeWorldManager
   - SwoftyWorldManager
+  - SlimeWorldPlugin

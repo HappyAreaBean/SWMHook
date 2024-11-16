@@ -14,8 +14,6 @@ import cc.happyareabean.swmhook.metrics.MetricsWrapper;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import cc.happyareabean.swmhook.objects.SWMWorldType;
 import cc.happyareabean.swmhook.utils.Color;
-import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -180,9 +178,9 @@ public class SWMHook extends JavaPlugin {
 				String toBeUnload = world.getWorldName() + currentNumber;
 				info(String.format("Unloading world: [%s] from template world [%s]...", toBeUnload, world.getTemplateName()));
 				if (Bukkit.unloadWorld(toBeUnload, false)) {
-					log(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + toBeUnload + ChatColor.GREEN + " unloaded correctly.");
+					log(ChatColor.GREEN + "World " + ChatColor.YELLOW + toBeUnload + ChatColor.GREEN + " unloaded correctly.");
 				} else {
-					log(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to unload world " + toBeUnload + ".");
+					log(ChatColor.RED + "Failed to unload world " + toBeUnload + ".");
 				}
 			}
 
@@ -206,10 +204,6 @@ public class SWMHook extends JavaPlugin {
 	public void setArenaProvider(ArenaProvider provider) {
 		arenaProviderManager.setProvider(provider);
 		log("[SET] Arena provider has been changed to: " + provider.getProviderName());
-	}
-
-	public SlimePlugin getSlimePlugin() {
-		return (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
 	}
 
 	public static void prefixedLog(String message) {

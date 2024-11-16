@@ -15,6 +15,7 @@ repositories {
 dependencies {
     compileOnly(project(":core"))
     compileOnly(project(":aswm"))
+    compileOnly(project(":slimeworldplugin"))
 
     implementation 'de.exlll:configlib-core:2.3.0'
 

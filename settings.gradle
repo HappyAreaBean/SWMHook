@@ -2,4 +2,5 @@ rootProject.name = 'SWMHook'
 include 'aswm'
 include 'plugin'
 include 'core'
+include 'slimeworldplugin'
 

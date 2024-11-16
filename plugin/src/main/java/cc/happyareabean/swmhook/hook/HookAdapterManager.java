@@ -4,6 +4,7 @@ import cc.happyareabean.swmhook.SWMHook;
 import cc.happyareabean.swmhook.hook.impl.AdvancedSlimePaperHookAdapter;
 import cc.happyareabean.swmhook.hook.impl.DefaultHookAdapter;
 import cc.happyareabean.swmhook.hook.impl.SlimeWorldManagerHookAdapter;
+import cc.happyareabean.swmhook.hook.impl.SlimeWorldPluginHookAdapter;
 import cc.happyareabean.swmhook.hook.impl.SwoftyWorldManagerHookAdapter;
 import cc.happyareabean.swmhook.objects.SWMHWorld;
 import lombok.Getter;
@@ -20,6 +21,11 @@ public class HookAdapterManager {
 
 	public HookAdapterManager(JavaPlugin plugin) {
 		PluginManager pm = Bukkit.getPluginManager();
+
+		if (pm.isPluginEnabled("SlimeWorldPlugin")) {
+			register(new SlimeWorldPluginHookAdapter());
+			return;
+		}
 
 		if (pm.isPluginEnabled("SlimeWorldManager")) {
 			try {

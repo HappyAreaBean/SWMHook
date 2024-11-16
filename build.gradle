@@ -49,6 +49,7 @@ dependencies {
     implementation(project("aswm"))
     implementation(project("plugin"))
     implementation(project("core"))
+    implementation(project("slimeworldplugin"))
 }
 
 def mcVersion = "1.8.8"
